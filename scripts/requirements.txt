@@ -6,3 +6,7 @@ python-dotenv>=1.0.0
 # Dependencies untuk build_expertise_data.py (TF-IDF untuk pencarian pakar)
 scikit-learn>=1.3.0
 numpy>=1.24.0
+
+# Opsional: perekam PDDikti saat browsing manual (scripts/pddikti_capture.py)
+# Memakai Google Chrome yang sudah terpasang, tidak perlu `playwright install`.
+playwright>=1.40

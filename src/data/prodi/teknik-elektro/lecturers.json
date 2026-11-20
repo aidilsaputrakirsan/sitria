@@ -1,0 +1,135 @@
+{
+  "name": "Teknik Elektro",
+  "code": "TE",
+  "jurusan": "Teknik Elektro, Informatika, dan Bisnis",
+  "source": "fsti.itk.ac.id/profil/dosen + SINTA (afiliasi ITK)",
+  "generatedAt": "2026-11-20T12:58:51",
+  "lecturers": [
+    {
+      "name": "Adi Mahmud Jaya Marindra, S.T., M.Eng., Ph.D.",
+      "scholarId": "CiO0e0sAAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=CiO0e0sAAAAJ&hl=id",
+      "sintaId": "5996240",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/5996240"
+    },
+    {
+      "name": "Amalia Rizqi Utami, S.T., M.T.",
+      "scholarId": "Ix9lU8kAAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?hl=en&user=Ix9lU8kAAAAJ&view_op=list_works&sortby=pubdate",
+      "sintaId": "6772076",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6772076"
+    },
+    {
+      "name": "Andhika Giyantara, S.T., M.T.",
+      "scholarId": "zT-GacEAAAAJ",
+      "scholarUrl": "https://scholar.google.co.id/citations?user=zT-GacEAAAAJ&hl=en",
+      "sintaId": "5993333",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/5993333"
+    },
+    {
+      "name": "Barokatun Hasanah, S.T, M.T.",
+      "scholarId": "qKxwguwAAAAJ",
+      "scholarUrl": "https://scholar.google.co.id/citations?user=qKxwguwAAAAJ&hl=id",
+      "sintaId": "6145055",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6145055"
+    },
+    {
+      "name": "Firilia Filiana, S.T, M.T",
+      "scholarId": "eN4oLDoAAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=eN4oLDoAAAAJ",
+      "sintaId": "6141992",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6141992"
+    },
+    {
+      "name": "Happy Aprillia, S.ST., M.T., M.Eng.,Ph.D.",
+      "scholarId": "OyXLb04AAAAJ",
+      "scholarUrl": "https://scholar.google.co.id/citations?user=OyXLb04AAAAJ&hl=en",
+      "sintaId": "5997355",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/5997355"
+    },
+    {
+      "name": "Himawan Wicaksono, S.ST.,M.T.",
+      "scholarId": "e4MjGN4AAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=e4MjGN4AAAAJ",
+      "sintaId": "6159179",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6159179"
+    },
+    {
+      "name": "Kharis Sugiarto, SST.,M.T.",
+      "scholarId": "QRoIKb0AAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=QRoIKb0AAAAJ",
+      "sintaId": "6784828",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6784828"
+    },
+    {
+      "name": "Mifta Nur Farid, S.T., M.T.",
+      "scholarId": "nGa5PsQAAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=nGa5PsQAAAAJ",
+      "sintaId": "6701049",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6701049"
+    },
+    {
+      "name": "Mudeng, Vicky Vendy Hengki, S.T., M.Sc",
+      "scholarId": "T4ZYOPUAAAAJ",
+      "scholarUrl": "https://scholar.google.co.id/citations?user=T4ZYOPUAAAAJ&hl=id",
+      "sintaId": "6142052",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6142052"
+    },
+    {
+      "name": "Muhammad Agung Nursyeha, S.T., M.T.",
+      "scholarId": "VRGoZkAAAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=VRGoZkAAAAAJ",
+      "sintaId": "6807468",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6807468"
+    },
+    {
+      "name": "Muhammad Ridho Dewanto, S.T., M.T.",
+      "scholarId": "5bhZNUgAAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=5bhZNUgAAAAJ&hl=id&authuser=1",
+      "sintaId": "6817196",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6817196"
+    },
+    {
+      "name": "Risty Jayanti Yuniar,S.T.,M.T.",
+      "scholarId": "g_iBqcwAAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=g_iBqcwAAAAJ",
+      "sintaId": "6773655",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6773655"
+    },
+    {
+      "name": "Riza Hadi Saputra, S.T., M.T",
+      "scholarId": "SV4lVIsAAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=SV4lVIsAAAAJ&hl=en",
+      "sintaId": "6030283",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6030283"
+    },
+    {
+      "name": "Sena Sukmananda Suprapto, S.T, M.T.",
+      "scholarId": "xsEKuyQAAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=xsEKuyQAAAAJ",
+      "sintaId": "6643373",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6643373"
+    },
+    {
+      "name": "Thorikul Huda, S.T., M.T.",
+      "scholarId": "lnJ17XAAAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=lnJ17XAAAAAJ",
+      "sintaId": "6141011",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6141011"
+    },
+    {
+      "name": "Vicky Andria Kusuma, S.ST., M.T.",
+      "scholarId": "pQO9VDMAAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=pQO9VDMAAAAJ",
+      "sintaId": "6736466",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6736466"
+    },
+    {
+      "name": "Yun Tonce Kusuma Priyanto, S.T., M.T.",
+      "scholarId": "JSkj07UAAAAJ",
+      "scholarUrl": "https://scholar.google.co.id/citations?user=JSkj07UAAAAJ&hl=id",
+      "sintaId": "6142739",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6142739"
+    }
+  ]
+}

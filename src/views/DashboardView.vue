@@ -23,21 +23,39 @@
         dosen, langsung dari data resmi.
       </template>
       <template #actions>
-        <!-- Filter prodi: hanya prodi yang sudah punya data -->
-        <div class="inline-flex flex-wrap gap-1 rounded-2xl border border-slate-200 bg-white/90 p-1 shadow-sm backdrop-blur">
-          <button
-            v-for="opt in prodiOptions"
-            :key="opt.slug"
-            @click="selectedProdi = opt.slug"
-            class="rounded-xl px-3.5 py-2 text-sm font-semibold transition-all"
-            :class="selectedProdi === opt.slug ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'"
-          >{{ opt.label }}</button>
+        <div class="flex flex-col items-start gap-2 md:items-end">
+          <!-- Tingkat 1: jurusan -->
+          <div class="inline-flex flex-wrap gap-1 rounded-2xl border border-slate-200 bg-white/90 p-1 shadow-sm backdrop-blur">
+            <button
+              v-for="opt in jurusanOptions"
+              :key="opt.slug"
+              @click="selectJurusan(opt.slug)"
+              :title="opt.title"
+              class="rounded-xl px-3.5 py-2 text-sm font-semibold transition-all"
+              :class="selectedJurusan === opt.slug ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'"
+            >{{ opt.label }}</button>
+          </div>
+          <!-- Tingkat 2: prodi di jurusan terpilih (hanya yang datanya sudah lengkap) -->
+          <div v-if="prodiOptions.length > 1" class="inline-flex flex-wrap gap-1">
+            <button
+              v-for="opt in prodiOptions"
+              :key="opt.slug"
+              @click="selectedProdi = opt.slug"
+              class="rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors"
+              :class="selectedProdi === opt.slug ? 'bg-slate-900 text-white' : 'bg-white/80 text-slate-500 hover:text-slate-900'"
+            >{{ opt.label }}</button>
+          </div>
         </div>
       </template>
     </PageHeader>
 
+    <div v-if="!slugs.length" class="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center">
+      <p class="font-semibold text-slate-700">Data SINTA untuk {{ scopeName }} belum disinkron.</p>
+      <p class="mt-1 text-sm text-slate-500">Lihat status tiap prodi pada bagian Cakupan Data di bawah.</p>
+    </div>
+
     <!-- KPI utama: setiap angka hanya muncul sekali di halaman ini -->
-    <FadeContent :stagger="0.08" :duration="0.6" class-name="grid grid-cols-2 gap-4 lg:grid-cols-4">
+    <FadeContent v-if="slugs.length" :stagger="0.08" :duration="0.6" class-name="grid grid-cols-2 gap-4 lg:grid-cols-4">
       <KpiCard
         v-for="kpi in kpis"
         :key="kpi.key"
@@ -51,7 +69,7 @@
     </FadeContent>
 
     <!-- Per darma: metrik pendalaman yang tidak diulang dari KPI di atas -->
-    <section>
+    <section v-if="slugs.length">
       <div class="mb-4 flex items-end justify-between gap-3">
         <h2 class="text-lg font-black text-slate-900">Per Darma</h2>
         <p class="text-xs text-slate-400">Klik kartu untuk membuka detail</p>
@@ -89,15 +107,54 @@
       </FadeContent>
     </section>
 
-    <p class="text-center text-xs text-slate-400">
-      {{ prodiWithData.length }} dari {{ prodiList.length }} program studi FSTI sudah terdata. Prodi lain menyusul.
-    </p>
+    <!-- Cakupan data per jurusan -->
+    <section>
+      <div class="mb-4 flex items-end justify-between gap-3">
+        <h2 class="text-lg font-black text-slate-900">Cakupan Data per Jurusan</h2>
+        <p class="text-xs text-slate-400">{{ readyCount }} dari {{ prodiList.length }} prodi FSTI sudah tersinkron</p>
+      </div>
+      <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div
+          v-for="j in coverage"
+          :key="j.slug"
+          class="rounded-2xl border bg-white p-5 transition-colors"
+          :class="selectedJurusan === j.slug ? 'border-blue-300' : 'border-slate-200'"
+        >
+          <div class="mb-3 flex items-start justify-between gap-3">
+            <div>
+              <h3 class="font-bold text-slate-800">{{ j.name }}</h3>
+              <p class="text-xs text-slate-500">{{ j.short }} · {{ j.prodi.length }} prodi · {{ j.lecturers }} dosen terdata</p>
+            </div>
+            <button
+              @click="selectJurusan(j.slug)"
+              class="shrink-0 rounded-lg px-2.5 py-1 text-xs font-semibold text-blue-600 hover:bg-blue-50"
+            >Lihat</button>
+          </div>
+          <ul class="divide-y divide-slate-100">
+            <li v-for="p in j.prodi" :key="p.slug" class="flex items-center justify-between gap-3 py-2">
+              <button
+                class="min-w-0 truncate text-left text-sm"
+                :class="p.hasData ? 'font-medium text-slate-700 hover:text-blue-700' : 'cursor-default text-slate-500'"
+                @click="p.hasData && selectProdi(p)"
+              >{{ p.name }}</button>
+              <span class="flex shrink-0 items-center gap-2 text-xs">
+                <span v-if="p.lecturerCount" class="tabular-nums text-slate-400">{{ p.lecturerCount }} dosen</span>
+                <span class="rounded-md px-2 py-0.5 font-semibold" :class="STATUS[p.status].cls">{{ STATUS[p.status].label }}</span>
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <p class="mt-3 text-xs text-slate-400">
+        Daftar dosen mengikuti web FSTI, SINTA ID dicocokkan otomatis. Rincian ada di <code>docs/DATA_DOSEN_JTEIB.md</code>.
+      </p>
+    </section>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-import { prodiRegistry, prodiList } from '../data/prodi/index.js'
+import { prodiRegistry, prodiList, jurusanList } from '../data/prodi/index.js'
 import { formatNumber, formatCurrencyShort, relativeTime, latestGeneratedAt } from '../utils/format.js'
 import PageHeader from '../components/ui/PageHeader.vue'
 import KpiCard from '../components/ui/KpiCard.vue'
@@ -105,11 +162,47 @@ import SpotlightCard from '../components/vue-bits/SpotlightCard.vue'
 import FadeContent from '../components/vue-bits/FadeContent.vue'
 import RotatingText from '../components/vue-bits/RotatingText.vue'
 
+// === Cakupan: jurusan -> prodi ===
+const selectedJurusan = ref('all')
 const selectedProdi = ref('all')
-const prodiWithData = prodiList.filter(p => p.hasData)
-const prodiOptions = [{ slug: 'all', label: 'Semua Prodi' }, ...prodiWithData.map(p => ({ slug: p.slug, label: p.code }))]
 
-const slugs = computed(() => (selectedProdi.value === 'all' ? prodiWithData.map(p => p.slug) : [selectedProdi.value]))
+const jurusanOptions = [
+  { slug: 'all', label: 'Semua FSTI', title: 'Fakultas Sains dan Teknologi Informasi' },
+  ...jurusanList.map(j => ({ slug: j.slug, label: j.short, title: `Jurusan ${j.name}` })),
+]
+const readyInJurusan = computed(() =>
+  prodiList.filter(p => p.hasData && (selectedJurusan.value === 'all' || p.jurusanSlug === selectedJurusan.value)))
+const prodiOptions = computed(() => [
+  { slug: 'all', label: selectedJurusan.value === 'all' ? 'Semua prodi' : 'Semua prodi jurusan' },
+  ...readyInJurusan.value.map(p => ({ slug: p.slug, label: p.code })),
+])
+const slugs = computed(() => (selectedProdi.value === 'all' ? readyInJurusan.value.map(p => p.slug) : [selectedProdi.value]))
+
+function selectJurusan(slug) {
+  selectedJurusan.value = slug
+  selectedProdi.value = 'all'
+}
+function selectProdi(p) {
+  selectedJurusan.value = p.jurusanSlug
+  selectedProdi.value = p.slug
+}
+
+const scopeName = computed(() => {
+  if (selectedProdi.value !== 'all') return prodiList.find(p => p.slug === selectedProdi.value)?.name
+  if (selectedJurusan.value === 'all') return 'FSTI'
+  return `Jurusan ${jurusanList.find(j => j.slug === selectedJurusan.value)?.name}`
+})
+
+const STATUS = {
+  ready: { label: 'Tersinkron', cls: 'bg-emerald-50 text-emerald-700' },
+  roster: { label: 'Menunggu sinkron SINTA', cls: 'bg-amber-50 text-amber-700' },
+  empty: { label: 'Belum ada data', cls: 'bg-slate-100 text-slate-500' },
+}
+const readyCount = prodiList.filter(p => p.hasData).length
+const coverage = jurusanList.map(j => {
+  const prodi = prodiList.filter(p => p.jurusanSlug === j.slug)
+  return { ...j, prodi, lecturers: prodi.reduce((n, p) => n + p.lecturerCount, 0) }
+})
 
 // === Agregasi ===
 const agg = computed(() => {
@@ -119,16 +212,17 @@ const agg = computed(() => {
     activeServiceLecturers: 0,
     pddiktiLecturers: 0, classes: 0, supervisionRoles: 0, thesesAsMain: 0, hasTeaching: false,
   }
+  const seen = { research: new Map(), service: new Map() }
   slugs.value.forEach(slug => {
     const d = prodiRegistry[slug]
     if (!d?.sintaData) return
     const s = d.sintaData.prodiSummary || {}
     a.dosen += s.lecturerCount || 0
-    a.research += s.totalResearchCount || 0
-    a.service += s.totalServiceCount || 0
-    a.researchFunding += s.totalResearchFunding || 0
-    a.serviceFunding += s.totalServiceFunding || 0
     ;(d.sintaData.lecturers || []).forEach(l => {
+      // Judul unik lintas prodi (judul|tahun), sama dengan cara hitung menu Pendanaan,
+      // agar judul kolaborasi antarprodi tidak terhitung dua kali.
+      ;(l.research || []).forEach(r => { if (r.title) seen.research.set(`${r.title}|${r.year || ''}`, r.fundingAmount || 0) })
+      ;(l.services || []).forEach(r => { if (r.title) seen.service.set(`${r.title}|${r.year || ''}`, r.fundingAmount || 0) })
       a.articles += l.stats?.googleArticles || l.stats?.articles || 0
       a.citations += l.stats?.googleCitations || 0
       const sc = l.documents?.scopus || {}
@@ -150,13 +244,17 @@ const agg = computed(() => {
       a.thesesAsMain += l.byRole?.['Pembimbing 1'] || 0
     })
   })
+  const sum = (m) => [...m.values()].reduce((x, y) => x + y, 0)
+  a.research = seen.research.size
+  a.service = seen.service.size
+  a.researchFunding = sum(seen.research)
+  a.serviceFunding = sum(seen.service)
   return a
 })
 
 const headerMeta = computed(() => {
-  const scope = selectedProdi.value === 'all'
-    ? `${prodiWithData.length} prodi`
-    : prodiList.find(p => p.slug === selectedProdi.value)?.name
+  if (!slugs.value.length) return `${scopeName.value} · belum ada prodi tersinkron`
+  const scope = selectedProdi.value === 'all' ? `${scopeName.value} (${slugs.value.length} prodi tersinkron)` : scopeName.value
   return `${formatNumber(agg.value.dosen)} dosen · ${scope} · SINTA diperbarui ${relativeTime(latestGeneratedAt('sintaData'))}`
 })
 

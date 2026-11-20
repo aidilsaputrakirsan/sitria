@@ -88,7 +88,7 @@ ENV
 
 ### 3. Cara Menambahkan Data / Prodi Baru
 Ingin mengintegrasikan prodi baru misal `"teknik-elektro"`:
-1. Buat folder config di `src/data/prodi/teknik-elektro/lecturers.json`. Format minimal butuh `"name"` dan `"sintaId"`.
+1. Buat `src/data/prodi/teknik-elektro/lecturers.json` (minimal `"name"` dan `"sintaId"`). Cara cepat: `python scripts/build_lecturers_from_fsti.py --write` mengambil daftar dosen dari web FSTI dan mencocokkan SINTA ID-nya otomatis (laporan: `docs/DATA_DOSEN_JTEIB.md`).
 2. Jalankan perintah scrape pipeline:
    ```bash
    python scripts/sinta_scraper.py teknik-elektro          # butuh .env (akun SINTA)
@@ -99,8 +99,18 @@ Ingin mengintegrasikan prodi baru misal `"teknik-elektro"`:
    python scripts/build_clusters.py
    python scripts/build_roadmap.py
    ```
-3. Registrasikan mapping prodi tersebut di file `src/data/prodi/index.js` (Ubah status flag menjadi `hasData: true`).
+3. Tidak perlu mengubah `src/data/prodi/index.js`: file JSON di folder prodi terdeteksi otomatis. Prodi tampil sebagai "Menunggu sinkron SINTA" setelah `lecturers.json` ada, dan otomatis aktif begitu `sinta_data.json` tersedia.
 4. Dashboard & Graph Analytics siap digunakan.
+
+### Data PDDikti (homebase & pengajaran)
+API PDDikti kini dilindungi reCAPTCHA, jadi data diambil saat **browsing manual**:
+```bash
+pip install playwright                       # sekali saja; memakai Google Chrome terpasang
+python scripts/pddikti_capture.py            # Chrome terbuka -> buka halaman dosen di PDDikti -> tutup bila selesai
+python scripts/pddikti_import.py             # tulis pddikti_data.json + laporan docs/HOMEBASE_PDDIKTI.md
+python scripts/pddikti_import.py --apply-homebase   # (opsional) sesuaikan anggota prodi dgn homebase PDDikti
+```
+Rekaman tersimpan di `cache/pddikti/` (tidak di-commit). Untuk jangka panjang, gunakan ekspor Neo Feeder dari operator PDDikti ITK.
 
 ### 4. Menjalankan Dashboard Mode Development
 ```bash

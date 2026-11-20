@@ -102,7 +102,7 @@
                 v-if="cluster.isCrossProdi"
                 class="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-600 text-white text-[10px] font-bold rounded-full"
               >
-                <span class="w-1.5 h-1.5 bg-white rounded-full"></span>SI + BD
+                <span class="w-1.5 h-1.5 bg-white rounded-full"></span>{{ cluster.prodis.map(prodiCode).join(' + ') }}
               </span>
               <span
                 v-if="cluster.collaborationPotential === 'high'"
@@ -116,8 +116,9 @@
             <span
               v-for="prodi in cluster.prodis"
               :key="prodi"
-              :class="['px-2.5 py-0.5 rounded-md text-xs font-bold', prodi === 'Sistem Informasi' ? 'bg-blue-100 text-blue-700' : 'bg-pink-100 text-pink-700']"
-            >{{ prodi === 'Sistem Informasi' ? 'SI' : 'BD' }}</span>
+              class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-slate-100 text-slate-700"
+              :title="prodi"
+            >{{ prodiCode(prodi) }}</span>
             <span class="px-2.5 py-0.5 bg-slate-100 text-slate-600 rounded-md text-xs font-bold">
               {{ cluster.count }} karya
             </span>
@@ -155,8 +156,8 @@
             <div class="flex items-center gap-2 mt-1 text-xs text-slate-400">
               <span class="font-medium text-slate-500">{{ item.author }}</span>
               <span>·</span>
-              <span :class="item.prodi === 'Sistem Informasi' ? 'text-blue-500' : 'text-pink-500'" class="font-semibold">
-                {{ item.prodi === 'Sistem Informasi' ? 'SI' : 'BD' }}
+              <span class="font-semibold text-slate-500" :title="item.prodi">
+                {{ prodiCode(item.prodi) }}
               </span>
               <span v-if="item.year">· {{ item.year }}</span>
             </div>
@@ -296,6 +297,10 @@ export default {
     }
   },
   methods: {
+    // Kode prodi dari registry (SI, BD, TE, IF, ...), bukan lagi hard-code SI/BD
+    prodiCode(name) {
+      return prodiList.find(p => p.name === name)?.code || name;
+    },
     // Kata-kata generik yang tidak bermakna sebagai label topik
     _genericWords() {
       return new Set([

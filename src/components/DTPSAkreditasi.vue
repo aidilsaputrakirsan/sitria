@@ -146,7 +146,10 @@
           <tfoot class="sticky bottom-0 bg-slate-100">
             <tr class="font-bold">
               <td class="py-3 px-2"></td>
-              <td class="py-3 px-4 text-slate-800">TOTAL DTPS ({{ currentDtpsCount }} dosen)</td>
+              <td class="py-3 px-4 text-slate-800">
+                TOTAL DTPS ({{ currentDtpsCount }} dosen)
+                <span class="block text-xs font-normal text-slate-500">Judul unik; judul yang dikerjakan beberapa dosen dihitung sekali</span>
+              </td>
               <td class="py-3 px-4"></td>
               <td class="py-3 px-2 text-center">
                 <span class="font-semibold tabular-nums text-slate-800">{{ filteredResearchCount }}</span>
@@ -266,16 +269,17 @@ export default {
 
       // Hitung data penelitian dan pengabdian per dosen
       allProdiLecturers.forEach(lecturer => {
+        // Cocokkan lewat SINTA ID (pasti), baru nama lengkap ternormalisasi sebagai cadangan.
+        // Dulu memakai kata pertama nama, sehingga mis. "Dwi Nur Amalia" mendapat data "Dwi Arief".
         const normalizedName = this.normalizeName(lecturer.name)
-        const sintaLecturer = this.lecturers.find(l => 
-          this.normalizeName(l.name) === normalizedName ||
-          l.name.toLowerCase().includes(normalizedName.split(' ')[0]) ||
-          normalizedName.includes(this.normalizeName(l.name).split(' ')[0])
-        )
+        const sintaLecturer =
+          (lecturer.sintaId && this.lecturers.find(l => String(l.sintaId) === String(lecturer.sintaId))) ||
+          this.lecturers.find(l => this.normalizeName(l.name) === normalizedName)
 
         let researchCount = 0
         let serviceCount = 0
         let totalFunding = 0
+        let items = []  // kunci judul unik untuk total DTPS
 
         if (sintaLecturer) {
           // Filter by year range
@@ -285,6 +289,7 @@ export default {
             )
             researchCount = filteredResearch.length
             totalFunding += filteredResearch.reduce((sum, r) => sum + (r.fundingAmount || 0), 0)
+            items.push(...filteredResearch.map(r => ({ key: `r|${r.title}|${r.year || ''}`, type: 'r', funding: r.fundingAmount || 0 })))
           }
           if (sintaLecturer.services) {
             const filteredServices = sintaLecturer.services.filter(s => 
@@ -292,6 +297,7 @@ export default {
             )
             serviceCount = filteredServices.length
             totalFunding += filteredServices.reduce((sum, s) => sum + (s.fundingAmount || 0), 0)
+            items.push(...filteredServices.map(s => ({ key: `s|${s.title}|${s.year || ''}`, type: 's', funding: s.fundingAmount || 0 })))
           }
         }
 
@@ -300,6 +306,7 @@ export default {
           homebase: lecturer.homebase,
           isHomebase: lecturer.isHomebase,
           researchCount,
+          items,
           serviceCount,
           totalFunding
         })
@@ -323,16 +330,23 @@ export default {
       return this.selectedDtps.length
     },
 
+    // Judul unik yang melibatkan minimal satu DTPS terpilih (judul kolaborasi dihitung sekali)
+    selectedUniqueItems() {
+      const map = new Map()
+      this.selectedDtps.forEach(l => (l.items || []).forEach(it => map.set(it.key, it)))
+      return [...map.values()]
+    },
+
     filteredResearchCount() {
-      return this.selectedDtps.reduce((sum, l) => sum + l.researchCount, 0)
+      return this.selectedUniqueItems.filter(it => it.type === 'r').length
     },
 
     filteredServiceCount() {
-      return this.selectedDtps.reduce((sum, l) => sum + l.serviceCount, 0)
+      return this.selectedUniqueItems.filter(it => it.type === 's').length
     },
 
     totalSelectedFunding() {
-      return this.selectedDtps.reduce((sum, l) => sum + l.totalFunding, 0)
+      return this.selectedUniqueItems.reduce((sum, it) => sum + it.funding, 0)
     },
 
     ratioResearchPerDtps() {

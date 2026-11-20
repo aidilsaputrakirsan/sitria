@@ -51,7 +51,12 @@
           </thead>
           <tbody>
             <template v-if="selectedProdi === 'all'">
-              <tr v-for="summary in prodiSummaryList" :key="summary.prodi" class="border-b border-slate-100 hover:bg-slate-50">
+              <template v-for="group in prodiSummaryByJurusan" :key="group.jurusan">
+              <!-- Baris judul jurusan -->
+              <tr class="bg-slate-50/70">
+                <td colspan="8" class="px-4 pt-4 pb-2 text-xs font-semibold text-slate-500">Jurusan {{ group.jurusan }}</td>
+              </tr>
+              <tr v-for="summary in group.rows" :key="summary.prodi" class="border-b border-slate-100 hover:bg-slate-50">
                 <td class="py-3 px-4 font-medium text-slate-800">{{ summary.prodi }}</td>
                 <td class="py-3 px-4 text-center">{{ summary.lecturerCount }}</td>
                 <td class="py-3 px-4 text-center">
@@ -65,6 +70,7 @@
                 <td class="py-3 px-4 text-right font-bold tabular-nums text-slate-800">{{ formatCurrency(summary.totalResearchFunding + summary.totalServiceFunding) }}</td>
                 <td class="py-3 px-4 text-right tabular-nums text-slate-700">{{ formatCurrency((summary.totalResearchFunding + summary.totalServiceFunding) / summary.lecturerCount) }}</td>
               </tr>
+              </template>
             </template>
             <template v-else>
               <tr class="border-b border-slate-100">
@@ -863,6 +869,18 @@ export default {
     },
 
     // Per prodi summary
+    // Ringkasan prodi dikelompokkan per jurusan (urutan mengikuti registry)
+    prodiSummaryByJurusan() {
+      const groups = []
+      prodiListData.filter(p => p.hasData).forEach(p => {
+        const row = this.prodiSummaryList.find(r => r.prodi === p.name)
+        if (!row) return
+        let g = groups.find(x => x.jurusan === p.jurusan)
+        if (!g) groups.push(g = { jurusan: p.jurusan, rows: [] })
+        g.rows.push(row)
+      })
+      return groups
+    },
     prodiSummaryList() {
       const summaryMap = {}
 
@@ -879,19 +897,23 @@ export default {
           }
         }
         summaryMap[prodi].lecturerCount++
-
-        if (lecturer.research) {
-          summaryMap[prodi].totalResearchCount += lecturer.research.length
-          lecturer.research.forEach(r => {
-            summaryMap[prodi].totalResearchFunding += r.fundingAmount || 0
-          })
-        }
-        if (lecturer.services) {
-          summaryMap[prodi].totalServiceCount += lecturer.services.length
-          lecturer.services.forEach(s => {
-            summaryMap[prodi].totalServiceFunding += s.fundingAmount || 0
-          })
-        }
+        // Hitung per judul unik (judul|tahun) di dalam prodi: satu judul yang dikerjakan
+        // beberapa dosen prodi yang sama hanya dihitung sekali, termasuk dananya.
+        const seen = summaryMap[prodi]._seen || (summaryMap[prodi]._seen = new Set())
+        ;(lecturer.research || []).forEach(r => {
+          const key = `r|${r.title}|${r.year || ''}`
+          if (!r.title || seen.has(key)) return
+          seen.add(key)
+          summaryMap[prodi].totalResearchCount++
+          summaryMap[prodi].totalResearchFunding += r.fundingAmount || 0
+        })
+        ;(lecturer.services || []).forEach(sv => {
+          const key = `s|${sv.title}|${sv.year || ''}`
+          if (!sv.title || seen.has(key)) return
+          seen.add(key)
+          summaryMap[prodi].totalServiceCount++
+          summaryMap[prodi].totalServiceFunding += sv.fundingAmount || 0
+        })
       })
 
       return Object.values(summaryMap).sort((a, b) =>

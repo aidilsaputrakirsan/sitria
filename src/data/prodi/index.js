@@ -1,67 +1,71 @@
-// Auto-generated prodi registry
-import siLecturers from './sistem-informasi/lecturers.json'
-import siSintaData from './sistem-informasi/sinta_data.json'
-import siExpertiseData from './sistem-informasi/expertise_data.json'
-import siClustersData from './sistem-informasi/clusters_data.json'
-import siPddiktiData from './sistem-informasi/pddikti_data.json'
-import siSupervisionData from './sistem-informasi/supervision_data.json'
-import siRoadmapMapping from './sistem-informasi/roadmap_mapping.json'
-import siRoadmapMappingItk from './sistem-informasi/roadmap_mapping_itk.json'
-import siAbdimasMapping from './sistem-informasi/abdimas_mapping.json'
+// Registry prodi & jurusan FSTI.
+//
+// File data di src/data/prodi/<slug>/*.json dideteksi otomatis, jadi menambah prodi
+// cukup dengan membuat foldernya (lecturers.json dulu, lalu hasil pipeline scraper).
+// Tidak perlu lagi menambah baris import manual di sini.
 
-import bdLecturers from './bisnis-digital/lecturers.json'
-import bdSintaData from './bisnis-digital/sinta_data.json'
-import bdExpertiseData from './bisnis-digital/expertise_data.json'
-import bdClustersData from './bisnis-digital/clusters_data.json'
+const files = import.meta.glob('./*/*.json', { eager: true, import: 'default' })
 
-export const prodiRegistry = {
-  'sistem-informasi': {
-    config: siLecturers,
-    sintaData: siSintaData,
-    expertiseData: siExpertiseData,
-    clustersData: siClustersData,
-    pddiktiData: siPddiktiData,
-    supervisionData: siSupervisionData,
-    roadmapMapping: siRoadmapMapping,
-    roadmapMappingItk: siRoadmapMappingItk,
-    abdimasMapping: siAbdimasMapping,
-    // Roadmap Abdimas ITK belum tersedia - lihat catatan di scripts/roadmap_refs.py
-    abdimasMappingItk: null,
-  },
-  'bisnis-digital': {
-    config: bdLecturers,
-    sintaData: bdSintaData,
-    expertiseData: bdExpertiseData,
-    clustersData: bdClustersData,
-    pddiktiData: null,
-    supervisionData: null,
-    roadmapMapping: null,
-    roadmapMappingItk: null,
-    abdimasMapping: null,
-    abdimasMappingItk: null,
-  },
-  // Placeholder entries for prodi without data yet
-  'teknik-elektro': { config: null },
-  'informatika': { config: null },
-  'teknik-biomedis': { config: null },
-  'magister-manajemen-teknologi': { config: null },
-  'fisika': { config: null },
-  'matematika': { config: null },
-  'statistika': { config: null },
-  'ilmu-aktuaria': { config: null },
+// nama file -> kunci di registry (dipakai komponen)
+const FILE_KEYS = {
+  lecturers: 'config',
+  sinta_data: 'sintaData',
+  expertise_data: 'expertiseData',
+  clusters_data: 'clustersData',
+  pddikti_data: 'pddiktiData',
+  supervision_data: 'supervisionData',
+  roadmap_mapping: 'roadmapMapping',
+  roadmap_mapping_itk: 'roadmapMappingItk',
+  abdimas_mapping: 'abdimasMapping',
+  abdimas_mapping_itk: 'abdimasMappingItk',
 }
 
-export const prodiList = [
-  // Jurusan Teknik Elektro, Informatika, dan Bisnis
-  { slug: 'sistem-informasi', name: 'Sistem Informasi', code: 'SI', jurusan: 'Teknik Elektro, Informatika, dan Bisnis', hasData: true },
-  { slug: 'bisnis-digital', name: 'Bisnis Digital', code: 'BD', jurusan: 'Teknik Elektro, Informatika, dan Bisnis', hasData: true },
-  { slug: 'teknik-elektro', name: 'Teknik Elektro', code: 'TE', jurusan: 'Teknik Elektro, Informatika, dan Bisnis', hasData: false },
-  { slug: 'informatika', name: 'Informatika', code: 'IF', jurusan: 'Teknik Elektro, Informatika, dan Bisnis', hasData: false },
-  { slug: 'teknik-biomedis', name: 'Teknik Biomedis', code: 'TB', jurusan: 'Teknik Elektro, Informatika, dan Bisnis', hasData: false },
-  { slug: 'magister-manajemen-teknologi', name: 'Magister Manajemen Teknologi', code: 'MMT', jurusan: 'Teknik Elektro, Informatika, dan Bisnis', hasData: false },
-  // Jurusan Sains dan Analitika Data
-  { slug: 'fisika', name: 'Fisika', code: 'FIS', jurusan: 'Sains dan Analitika Data', hasData: false },
-  { slug: 'matematika', name: 'Matematika', code: 'MAT', jurusan: 'Sains dan Analitika Data', hasData: false },
-  { slug: 'statistika', name: 'Statistika', code: 'STAT', jurusan: 'Sains dan Analitika Data', hasData: false },
-  { slug: 'ilmu-aktuaria', name: 'Ilmu Aktuaria', code: 'AKT', jurusan: 'Sains dan Analitika Data', hasData: false },
+export const jurusanList = [
+  { slug: 'jteib', name: 'Teknik Elektro, Informatika, dan Bisnis', short: 'JTEIB' },
+  { slug: 'jsad', name: 'Sains dan Analitika Data', short: 'JSAD' },
 ]
+
+const PRODI = [
+  // Jurusan Teknik Elektro, Informatika, dan Bisnis
+  { slug: 'sistem-informasi', name: 'Sistem Informasi', code: 'SI', jurusan: 'jteib' },
+  { slug: 'bisnis-digital', name: 'Bisnis Digital', code: 'BD', jurusan: 'jteib' },
+  { slug: 'teknik-elektro', name: 'Teknik Elektro', code: 'TE', jurusan: 'jteib' },
+  { slug: 'informatika', name: 'Informatika', code: 'IF', jurusan: 'jteib' },
+  { slug: 'teknik-biomedis', name: 'Teknik Biomedis', code: 'TB', jurusan: 'jteib' },
+  { slug: 'magister-manajemen-teknologi', name: 'Magister Manajemen Teknologi', code: 'MMT', jurusan: 'jteib' },
+  // Jurusan Sains dan Analitika Data
+  { slug: 'fisika', name: 'Fisika', code: 'FIS', jurusan: 'jsad' },
+  { slug: 'matematika', name: 'Matematika', code: 'MAT', jurusan: 'jsad' },
+  { slug: 'statistika', name: 'Statistika', code: 'STAT', jurusan: 'jsad' },
+  { slug: 'ilmu-aktuaria', name: 'Ilmu Aktuaria', code: 'AKT', jurusan: 'jsad' },
+]
+
+export const prodiRegistry = Object.fromEntries(PRODI.map(p => [p.slug, Object.fromEntries(Object.values(FILE_KEYS).map(k => [k, null]))]))
+for (const [path, json] of Object.entries(files)) {
+  const [, slug, file] = path.match(/^\.\/([^/]+)\/([^/]+)\.json$/) || []
+  const key = FILE_KEYS[file]
+  if (slug && key) {
+    prodiRegistry[slug] ??= {}
+    prodiRegistry[slug][key] = json
+  }
+}
+
+/**
+ * status:
+ *  - 'ready'  : data SINTA sudah disinkron (tampil di semua dashboard)
+ *  - 'roster' : daftar dosen + SINTA ID sudah ada, menunggu sinkron SINTA
+ *  - 'empty'  : belum ada data
+ */
+export const prodiList = PRODI.map(p => {
+  const r = prodiRegistry[p.slug]
+  const status = r.sintaData ? 'ready' : r.config ? 'roster' : 'empty'
+  const jurusan = jurusanList.find(j => j.slug === p.jurusan)
+  return {
+    ...p,
+    jurusanSlug: p.jurusan,
+    jurusan: jurusan.name,
+    status,
+    hasData: status === 'ready',
+    lecturerCount: r.config?.lecturers?.length || 0,
+  }
+})

@@ -35,3 +35,6 @@ cache/*.json
 # Python
 __pycache__/
 *.pyc
+
+# Python virtualenv
+.venv/

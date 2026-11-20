@@ -2,8 +2,8 @@
   <div class="space-y-6">
     <!-- KPI utama (Vue Bits: SpotlightCard + Counter) -->
     <FadeContent :stagger="0.07" :duration="0.6" class-name="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      <KpiCard label="Penelitian" :value="stats.totalResearch" accent="#2563eb" hint="Judul tercatat di SINTA" />
-      <KpiCard label="Pengabdian" :value="stats.totalServices" accent="#059669" hint="Kegiatan PkM tercatat di SINTA" />
+      <KpiCard label="Penelitian" :value="stats.totalResearch" accent="#2563eb" hint="Judul unik tercatat di SINTA" />
+      <KpiCard label="Pengabdian" :value="stats.totalServices" accent="#059669" hint="Judul PkM unik tercatat di SINTA" />
       <KpiCard label="Artikel Terindeks" :value="stats.totalScopus + stats.totalSinta" accent="#4f46e5">
         <template #hint>
           <span class="font-semibold text-indigo-600">{{ stats.totalScopus }} Scopus</span> ·
@@ -208,7 +208,7 @@
             >
               <td class="py-3 px-4">
                 <div class="font-bold text-slate-800 group-hover:text-green-700 transition-colors text-sm">{{ lecturer.name }}</div>
-                <div class="text-xs text-slate-400 font-medium">SINTA ID: {{ lecturer.sintaId }}</div>
+                <div class="text-xs text-slate-400 font-medium">{{ lecturer.prodi }} · SINTA {{ lecturer.sintaId }}</div>
               </td>
               <td class="text-center py-3 px-2">
                 <span :class="[
@@ -494,9 +494,11 @@ export default {
     },
     stats() {
       const s = { totalResearch: 0, totalServices: 0, totalScopus: 0, totalSinta: 0, totalCitations: 0, totalIpr: 0, totalBooks: 0, totalGoogle: 0, totalRama: 0 };
+      // Penelitian/pengabdian dihitung per judul unik (judul|tahun), bukan per keterlibatan dosen
+      const research = new Set(), services = new Set();
       this.sintaLecturers.forEach(l => {
-        s.totalResearch += l.researchTotal || l.research?.length || 0;
-        s.totalServices += l.servicesTotal || l.services?.length || 0;
+        (l.research || []).forEach(r => r.title && research.add(`${r.title}|${r.year || ''}`));
+        (l.services || []).forEach(r => r.title && services.add(`${r.title}|${r.year || ''}`));
         s.totalScopus += l.documents?.scopus?.total || 0;
         s.totalSinta += l.documents?.sinta?.total || 0;
         s.totalGoogle += l.documents?.googlescholar?.total || 0;
@@ -505,6 +507,8 @@ export default {
         s.totalIpr += l.ipr?.total || 0;
         s.totalBooks += l.books?.length || 0;
       });
+      s.totalResearch = research.size;
+      s.totalServices = services.size;
       return s;
     },
     scopusTotals() {

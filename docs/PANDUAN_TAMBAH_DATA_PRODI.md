@@ -13,7 +13,7 @@
               └──────────────────┘    └──────────────────────────────────────────────────┘
                                                           │
                                                           v
-                                              5. Update index.js
+                                              5. (otomatis) index.js
                                               6. npm run build
 ```
 
@@ -105,41 +105,19 @@ python scripts/research_clustering.py
 python scripts/research_roadmap.py
 ```
 
-### Langkah 4: Update `src/data/prodi/index.js`
+### Langkah 4: Tidak perlu mengubah `src/data/prodi/index.js`
 
-Ada 3 hal yang perlu diubah:
+Sejak November 2026 registry prodi memakai `import.meta.glob`, jadi semua file
+`src/data/prodi/<slug>/*.json` terdeteksi otomatis. Status prodi dihitung sendiri:
 
-**A. Tambah import di bagian atas:**
-```javascript
-import teLecturers from './teknik-elektro/lecturers.json'
-import teSintaData from './teknik-elektro/sinta_data.json'
-import teExpertiseData from './teknik-elektro/expertise_data.json'
-import teClustersData from './teknik-elektro/clusters_data.json'
-```
-*Gunakan prefix singkatan: `te` untuk Teknik Elektro, `if` untuk Informatika, dst.*
+| File yang ada | Status di dashboard |
+|---|---|
+| belum ada apa-apa | Belum ada data |
+| `lecturers.json` | Menunggu sinkron SINTA |
+| `lecturers.json` + `sinta_data.json` | Tersinkron (tampil di semua menu) |
 
-**B. Ganti placeholder di `prodiRegistry`:**
-```javascript
-// SEBELUM:
-'teknik-elektro': { config: null },
-
-// SESUDAH:
-'teknik-elektro': {
-  config: teLecturers,
-  sintaData: teSintaData,
-  expertiseData: teExpertiseData,
-  clustersData: teClustersData,
-},
-```
-
-**C. Set `hasData: true` di `prodiList`:**
-```javascript
-// SEBELUM:
-{ slug: 'teknik-elektro', name: 'Teknik Elektro', code: 'TE', jurusan: '...', hasData: false },
-
-// SESUDAH:
-{ slug: 'teknik-elektro', name: 'Teknik Elektro', code: 'TE', jurusan: '...', hasData: true },
-```
+Yang perlu diubah di `index.js` hanya bila menambah **prodi atau jurusan baru** yang
+belum ada di daftar `PRODI` / `jurusanList`.
 
 ### Langkah 5: Build & Verifikasi
 
@@ -240,7 +218,7 @@ Tolong:
 3. Jalankan build_expertise_data.py untuk prodi ini
 4. Jalankan research_clustering.py untuk prodi ini
 5. Jalankan research_roadmap.py
-6. Update src/data/prodi/index.js (tambah import, registry, set hasData: true)
+6. (Tidak perlu lagi) index.js mendeteksi file data secara otomatis
 7. Build dan verifikasi
 
 Lihat panduan di docs/PANDUAN_TAMBAH_DATA_PRODI.md

@@ -1,0 +1,122 @@
+{
+  "name": "Informatika",
+  "code": "IF",
+  "jurusan": "Teknik Elektro, Informatika, dan Bisnis",
+  "source": "fsti.itk.ac.id/profil/dosen + SINTA (afiliasi ITK)",
+  "generatedAt": "2026-11-20T12:58:51",
+  "lecturers": [
+    {
+      "name": "Aninditya Anggari Nuryono, S.T., M.Eng.",
+      "scholarId": "TquRRDgAAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=TquRRDgAAAAJ",
+      "sintaId": "6905582",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6905582"
+    },
+    {
+      "name": "Ariyadi, S.ST., M.T.",
+      "scholarId": "trRpZuIAAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=trRpZuIAAAAJ",
+      "sintaId": "5978672",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/5978672"
+    },
+    {
+      "name": "Bima Prihasto, S.Si., M.Si., Ph.D.",
+      "scholarId": "AAhL8J8AAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=AAhL8J8AAAAJ&hl=en",
+      "sintaId": "6195531",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6195531"
+    },
+    {
+      "name": "Boby Mugi Pratama, S.Si, M.Han.",
+      "scholarId": "DOcJMDIAAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=DOcJMDIAAAAJ",
+      "sintaId": "6761462",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6761462"
+    },
+    {
+      "name": "Bowo Nugroho, S.Kom., M.Eng.",
+      "scholarId": "pGkbHc4AAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=pGkbHc4AAAAJ",
+      "sintaId": "6754941",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6754941"
+    },
+    {
+      "name": "Darmansyah, S.Si., M.Ti.",
+      "scholarId": "bat0UUYAAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=bat0UUYAAAAJ",
+      "sintaId": "6724816",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6724816"
+    },
+    {
+      "name": "Gusti Ahmad Fanshuri Alfarisy, S.Kom., M.Kom.",
+      "scholarId": "giSF20kAAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=giSF20kAAAAJ",
+      "sintaId": "6681874",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6681874"
+    },
+    {
+      "name": "Muchammad Chandra Cahyo Utomo, M.Kom.",
+      "scholarId": "QNu4zG0AAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=QNu4zG0AAAAJ",
+      "sintaId": "6656384",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6656384"
+    },
+    {
+      "name": "Nisa Rizqiya Fadhliana, S.Kom., M.T",
+      "scholarId": "FHiPKa8AAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?hl=en&user=FHiPKa8AAAAJ",
+      "sintaId": "6473132",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6473132"
+    },
+    {
+      "name": "Nur Fajri Azhar, S.Kom., M.Kom.",
+      "scholarId": "6KT6-JUAAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=6KT6-JUAAAAJ",
+      "sintaId": "6646209",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6646209"
+    },
+    {
+      "name": "Ramadhan Paninggalih S.Si., M.Si., M.Sc.",
+      "scholarId": "tHDi4zEAAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=tHDi4zEAAAAJ&hl=en",
+      "sintaId": "6755059",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6755059"
+    },
+    {
+      "name": "Riska Kurniyanto Abdullah, S.T., M.Kom.",
+      "scholarId": "gbi4J2gAAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=gbi4J2gAAAAJ",
+      "sintaId": "6178553",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6178553",
+      "needsReview": true
+    },
+    {
+      "name": "Rizal Kusuma Putra, M.T.",
+      "scholarId": "iCCqBu4AAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=iCCqBu4AAAAJ&hl=en&authuser=4",
+      "sintaId": "6906413",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6906413"
+    },
+    {
+      "name": "Rizky Amelia, S.Si., M.Han.",
+      "scholarId": "jtA-k2QAAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=jtA-k2QAAAAJ",
+      "sintaId": "6795582",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6795582"
+    },
+    {
+      "name": "Syamsul Mujahidin, S.Kom., M.Eng",
+      "scholarId": "MkcUB64AAAAJ",
+      "scholarUrl": "https://scholar.google.com/citations?user=MkcUB64AAAAJ",
+      "sintaId": "6701295",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6701295"
+    },
+    {
+      "name": "Tegar Palyus Fiqar, S.T., M.Kom.",
+      "scholarId": "rXZB_b0AAAAJ",
+      "scholarUrl": "https://scholar.google.co.id/citations?user=rXZB_b0AAAAJ&hl=en",
+      "sintaId": "6104936",
+      "sintaUrl": "https://sinta.kemdiktisaintek.go.id/authors/profile/6104936"
+    }
+  ]
+}

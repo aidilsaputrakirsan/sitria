@@ -60,11 +60,25 @@ def fetch(path):
 
 
 def fetch_dosen(pddikti_id):
-    """Pull all 4 endpoints for a single dosen."""
+    """Pull all 4 endpoints for a single dosen.
+
+    Catatan (Nov 2026): API PDDikti kini mewajibkan reCAPTCHA untuk semua endpoint,
+    sehingga fungsi ini akan mendapat 403. Gunakan scripts/pddikti_capture.py
+    (perekam saat browsing manual) + scripts/pddikti_import.py sebagai gantinya.
+    """
     profile = fetch(f"dosen/profile/{pddikti_id}") or {}
     study = fetch(f"dosen/study-history/{pddikti_id}") or []
     teaching = fetch(f"dosen/teaching-history/{pddikti_id}") or []
     paten = fetch(f"dosen/portofolio/paten/{pddikti_id}") or []
+    return shape_dosen(profile, study, teaching, paten)
+
+
+def shape_dosen(profile, study, teaching, paten):
+    """Bentuk data satu dosen ke skema pddikti_data.json (dipakai juga oleh pddikti_import.py)."""
+    profile = profile or {}
+    study = study or []
+    teaching = teaching or []
+    paten = paten or []
 
     # Dedupe study history (PDDikti often returns duplicates)
     seen = set()
