@@ -1,20 +1,11 @@
 <template>
   <div class="space-y-6">
-    <!-- Tab Navigation -->
-    <div class="bg-white rounded-2xl border border-slate-200 p-1.5 shadow-sm inline-flex gap-1">
-      <button
-        v-for="tab in tabs"
-        :key="tab.key"
-        @click="activeTab = tab.key"
-        class="relative px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-2"
-        :class="activeTab === tab.key
-          ? 'bg-blue-50 text-blue-700 shadow-sm'
-          : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'"
-      >
-        <component :is="tab.icon" class="w-4 h-4" />
-        <span>{{ tab.label }}</span>
-      </button>
-    </div>
+    <PageHeader
+      title="SDM & Pakar"
+      description="Simulasi rasio DTPS untuk akreditasi dan pencarian dosen pakar berdasarkan ide penelitian."
+      :meta="meta"
+    />
+    <TabNav v-model="activeTab" :tabs="tabs" />
 
     <!-- Tab Content -->
     <transition name="tab" mode="out-in">
@@ -28,6 +19,9 @@
 
 <script setup>
 import { ref } from 'vue'
+import { syncLabel } from '../utils/format.js'
+import PageHeader from '../components/ui/PageHeader.vue'
+import TabNav from '../components/ui/TabNav.vue'
 import DTPSAkreditasi from '../components/DTPSAkreditasi.vue'
 import ExpertiseFinder from '../components/ExpertiseFinder.vue'
 
@@ -40,6 +34,7 @@ const tabs = [
 ]
 
 const activeTab = ref('akreditasi')
+const meta = syncLabel('SINTA')
 </script>
 
 <style scoped>

@@ -1,50 +1,28 @@
 <template>
   <div class="space-y-6">
-    <!-- Header -->
-    <div class="card bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-slate-700">
-      <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center gap-4">
-          <div class="relative">
-            <div class="w-14 h-14 bg-gradient-to-br from-cyan-500 via-sky-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/30">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-              </svg>
-            </div>
-            <div class="absolute inset-0 rounded-2xl bg-cyan-500/30 animate-pulse"></div>
-          </div>
-          <div>
-            <h1 class="text-2xl font-black text-white tracking-tight">Roadmap Riset</h1>
-            <p class="text-sm text-slate-400 mt-0.5">Evolusi tematik penelitian dan pengabdian dosen ({{ metadata.yearRange }})</p>
-          </div>
+    <!-- Ringkasan volume karya per tahun (mini bar, bukan kotak angka berulang) -->
+    <div class="card">
+      <div class="mb-4 flex flex-wrap items-end justify-between gap-2">
+        <div>
+          <h2 class="text-lg font-black text-slate-900">Evolusi Topik Riset</h2>
+          <p class="text-xs text-slate-500 mt-0.5">Penelitian dan pengabdian dosen, {{ metadata.yearRange }}</p>
         </div>
+        <AiNote v-if="hasData" class="max-w-md" />
       </div>
-
-      <!-- Timeline Metrics -->
-      <div class="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-2">
-        <div v-for="item in timeline" :key="item.year" class="bg-white/5 rounded-lg p-3 text-center border border-white/10">
-          <div class="text-xl font-bold text-cyan-400">{{ item.count }}</div>
-          <div class="text-[10px] text-slate-400 font-mono">{{ item.year }}</div>
+      <div class="flex h-24 items-end gap-1.5">
+        <div
+          v-for="item in timeline"
+          :key="item.year"
+          class="group flex flex-1 flex-col items-center justify-end gap-1 h-full"
+          :title="`${item.year}: ${item.count} karya`"
+        >
+          <span class="text-[10px] font-bold tabular-nums text-slate-500 opacity-0 transition-opacity group-hover:opacity-100">{{ item.count }}</span>
+          <div
+            class="w-full rounded-t-md bg-blue-200 transition-colors group-hover:bg-blue-500"
+            :style="{ height: Math.max(6, (item.count / timelineMax) * 100) + '%' }"
+          ></div>
+          <span class="text-[10px] font-mono text-slate-400">{{ String(item.year).slice(-2) }}</span>
         </div>
-      </div>
-    </div>
-
-    <!-- AI Attribution Banner -->
-    <div v-if="hasData" class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-4 flex items-start gap-4">
-      <div class="w-10 h-10 rounded-xl bg-white border border-blue-100 flex items-center justify-center text-blue-600 shrink-0 shadow-sm">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-        </svg>
-      </div>
-      <div class="flex-1 min-w-0">
-        <div class="flex items-center gap-2 mb-1">
-          <p class="text-sm font-bold text-slate-800">Dianalisis oleh Agen AI</p>
-          <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold rounded-full uppercase tracking-wider">Claude Opus</span>
-        </div>
-        <p class="text-xs text-slate-600 leading-relaxed">
-          Topik, fase evolusi, dan rekomendasi strategis disusun oleh
-          <strong class="text-slate-800">Claude Opus</strong> — model AI penalaran tingkat tinggi (high-level reasoning) dari Anthropic
-          yang membaca seluruh judul karya 2018-2025 dan menyimpulkan benang merah riset lab.
-        </p>
       </div>
     </div>
 
@@ -60,7 +38,7 @@
           <div class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-black text-slate-500">
             {{ idx + 1 }}
           </div>
-          <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">
+          <p class="text-xs font-bold text-slate-400 mb-1">
             {{ formatYears(phase.years) }}
           </p>
           <h3 class="text-base font-bold text-slate-800 mb-2">{{ phase.name }}</h3>
@@ -80,7 +58,7 @@
       </div>
 
       <div class="mb-2 flex items-center justify-between">
-        <p class="text-xs font-bold uppercase tracking-widest text-slate-500">Tren Topik per Tahun</p>
+        <p class="text-sm font-bold text-slate-700">Tren topik per tahun</p>
         <p class="text-[10px] text-slate-400">Klik titik pada garis untuk lihat judul</p>
       </div>
       <v-chart class="chart" :option="chartOption" autoresize @click="handleChartClick" />
@@ -96,21 +74,20 @@
           class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow"
         >
           <!-- Topic Header -->
-          <div class="flex items-start gap-3 mb-3">
-            <div
-              class="w-2 h-12 rounded-full shrink-0"
-              :style="{ backgroundColor: topic.color }"
-            ></div>
-            <div class="flex-1 min-w-0">
-              <h3 class="text-base font-bold text-slate-800">{{ topic.name }}</h3>
+          <div class="mb-3">
+            <div class="min-w-0">
+              <h3 class="flex items-center gap-2 text-base font-bold text-slate-800">
+                <span class="h-2.5 w-2.5 shrink-0 rounded-sm" :style="{ backgroundColor: topic.color }" title="Warna garis pada grafik"></span>
+                {{ topic.name }}
+              </h3>
               <div class="flex items-center gap-2 mt-1 flex-wrap">
-                <span class="px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-bold rounded uppercase tracking-wider">
+                <span class="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-medium rounded">
                   {{ topic.total_count }} karya
                 </span>
-                <span class="px-2 py-0.5 bg-amber-50 text-amber-700 text-[10px] font-bold rounded uppercase tracking-wider">
-                  Peak {{ topic.peak_year }}
+                <span class="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-medium rounded">
+                  Puncak {{ topic.peak_year }}
                 </span>
-                <span class="text-[10px] font-bold text-slate-400">
+                <span class="text-xs text-slate-400">
                   Aktif {{ topic.active_years[0] }}–{{ topic.active_years[topic.active_years.length - 1] }}
                 </span>
               </div>
@@ -120,11 +97,11 @@
           <!-- Narrative -->
           <div class="space-y-3 pt-3 border-t border-slate-100">
             <div class="flex items-start gap-2.5">
-              <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-1 shrink-0 w-16">Observasi</span>
+              <span class="text-xs font-semibold text-slate-500 shrink-0 w-16">Observasi</span>
               <p class="text-xs text-slate-700 leading-relaxed flex-1">{{ topic.narrative }}</p>
             </div>
             <div class="flex items-start gap-2.5">
-              <span class="text-[10px] font-bold uppercase tracking-widest text-blue-500 mt-1 shrink-0 w-16">Saran AI</span>
+              <span class="text-xs font-semibold text-slate-500 shrink-0 w-16">Saran</span>
               <p class="text-xs text-slate-800 leading-relaxed flex-1 font-medium">{{ topic.recommendation }}</p>
             </div>
           </div>
@@ -137,7 +114,7 @@
       <div class="bg-white rounded-2xl max-w-lg w-full max-h-[80vh] flex flex-col shadow-2xl animate-fade-in-up">
         <div class="p-6 border-b border-slate-100 flex justify-between items-start">
           <div>
-            <span class="text-xs font-bold text-cyan-500 uppercase tracking-wider">Topik Riset</span>
+            <span class="text-xs font-medium text-slate-500">Topik riset</span>
             <h3 class="text-2xl font-black text-slate-800">{{ selectedNode.name }}</h3>
             <p class="text-slate-500 text-sm mt-1">{{ selectedNode.titles.length }} karya pada periode ini</p>
           </div>
@@ -171,10 +148,11 @@ import VChart, { THEME_KEY } from 'vue-echarts';
 use([CanvasRenderer, LineChart, TitleComponent, TooltipComponent, LegendComponent, GridComponent]);
 
 import roadmapData from '../data/shared/roadmap_data.json';
+import AiNote from './ui/AiNote.vue';
 
 export default {
   name: 'ResearchRoadmap',
-  components: { VChart },
+  components: { VChart, AiNote },
   provide: {
     [THEME_KEY]: 'light'
   },
@@ -192,6 +170,9 @@ export default {
     },
     timeline() {
       return roadmapData?.timeline || [];
+    },
+    timelineMax() {
+      return Math.max(1, ...this.timeline.map(t => t.count || 0));
     },
     phases() {
       return roadmapData?.phases || [];

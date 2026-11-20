@@ -1,73 +1,35 @@
 <template>
   <div class="space-y-6">
-    <!-- Header -->
-    <div class="card bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-slate-700">
-      <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center gap-4">
-          <div class="relative">
-            <div class="w-14 h-14 bg-gradient-to-br from-violet-500 via-purple-500 to-fuchsia-600 rounded-2xl flex items-center justify-center shadow-lg shadow-violet-500/30">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-              </svg>
-            </div>
-            <div class="absolute inset-0 rounded-2xl bg-violet-500/30 animate-ping"></div>
-          </div>
-          <div>
-            <h1 class="text-2xl font-black text-white tracking-tight">Kolaborasi Riset</h1>
-            <p class="text-sm text-slate-400 mt-0.5">Pengelompokan tematik penelitian dan pengabdian dosen</p>
-          </div>
-        </div>
-        <div v-if="metadata" class="hidden md:block text-right">
-          <span class="text-xs uppercase tracking-wider text-slate-500 font-bold">Last Analysis</span>
-          <p class="text-sm font-semibold text-slate-300">{{ formatDate(metadata.generatedAt) }}</p>
-        </div>
-      </div>
-
-      <!-- Summary Stats -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div class="bg-white/5 rounded-xl p-4 text-center border border-white/10">
-          <div class="text-2xl font-black text-violet-300">{{ activeSummary?.totalClusters || 0 }}</div>
-          <div class="text-xs uppercase tracking-wider text-slate-400 mt-1 font-bold">Klaster Topik</div>
-        </div>
-        <div class="bg-white/5 rounded-xl p-4 text-center border border-white/10">
-          <div class="text-2xl font-black text-fuchsia-300">{{ activeSummary?.totalItems || 0 }}</div>
-          <div class="text-xs uppercase tracking-wider text-slate-400 mt-1 font-bold">
-            {{ activeType === 'penelitian' ? 'Total Penelitian' : 'Total Pengabdian' }}
-          </div>
-        </div>
-        <div class="bg-white/5 rounded-xl p-4 text-center border border-white/10">
-          <div class="text-2xl font-black text-emerald-300">{{ activeSummary?.crossProdiCount || 0 }}</div>
-          <div class="text-xs uppercase tracking-wider text-slate-400 mt-1 font-bold">Topik Lintas Prodi</div>
-        </div>
-        <div class="bg-white/5 rounded-xl p-4 text-center border border-white/10">
-          <div class="text-2xl font-black text-amber-300">{{ activeSummary?.highPotentialCount || 0 }}</div>
-          <div class="text-xs uppercase tracking-wider text-slate-400 mt-1 font-bold">Siap Kolaborasi</div>
-        </div>
-      </div>
+    <!-- KPI klaster (Counter bergulir saat Penelitian/Pengabdian diganti) -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <KpiCard label="Klaster Topik" :value="activeSummary?.totalClusters || 0" accent="#7c3aed" size="sm" />
+      <KpiCard :label="activeType === 'penelitian' ? 'Judul Penelitian' : 'Judul Pengabdian'" :value="activeSummary?.totalItems || 0" accent="#c026d3" size="sm" />
+      <KpiCard label="Topik Lintas Prodi" :value="activeSummary?.crossProdiCount || 0" accent="#059669" size="sm" />
+      <KpiCard label="Siap Kolaborasi" :value="activeSummary?.highPotentialCount || 0" accent="#d97706" size="sm" hint="Banyak dosen & lintas prodi" />
     </div>
 
     <!-- Tabs + Filter -->
     <div class="flex flex-wrap items-center gap-3">
-      <!-- Penelitian / Pengabdian -->
-      <div class="flex gap-1 bg-slate-100 p-1 rounded-xl">
+      <!-- Penelitian / Pengabdian (disembunyikan bila halaman sudah menentukan jenisnya) -->
+      <div v-if="!lockType" class="flex gap-1 bg-slate-100 p-1 rounded-xl">
         <button
           @click="activeType = 'penelitian'; activeFilter = 'all'"
           :class="[
             'px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200',
             activeType === 'penelitian' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
           ]"
-        >🔬 Penelitian</button>
+        >Penelitian</button>
         <button
           @click="activeType = 'pengabdian'; activeFilter = 'all'"
           :class="[
             'px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200',
             activeType === 'pengabdian' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
           ]"
-        >🤝 Pengabdian</button>
+        >Pengabdian</button>
       </div>
 
       <!-- Divider -->
-      <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>
+      <div v-if="!lockType" class="h-6 w-px bg-slate-200 hidden sm:block"></div>
 
       <!-- Filter chips — 3 opsi saja, label to the point -->
       <div class="flex gap-2 flex-wrap">
@@ -90,25 +52,7 @@
       </span>
     </div>
 
-    <!-- AI Attribution Banner -->
-    <div v-if="hasData" class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-4 flex items-start gap-4">
-      <div class="w-10 h-10 rounded-xl bg-white border border-blue-100 flex items-center justify-center text-blue-600 shrink-0 shadow-sm">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-        </svg>
-      </div>
-      <div class="flex-1 min-w-0">
-        <div class="flex items-center gap-2 mb-1">
-          <p class="text-sm font-bold text-slate-800">Dianalisis oleh Agen AI</p>
-          <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold rounded-full uppercase tracking-wider">Claude Opus</span>
-        </div>
-        <p class="text-xs text-slate-600 leading-relaxed">
-          Pengelompokan tematik, narasi observasi, dan rekomendasi kolaborasi disusun oleh
-          <strong class="text-slate-800">Claude Opus</strong> — model AI penalaran tingkat tinggi (high-level reasoning) dari Anthropic
-          yang membaca seluruh judul karya dan menyimpulkan klaster berdasarkan pemahaman semantik konten.
-        </p>
-      </div>
-    </div>
+    <AiNote v-if="hasData" />
 
     <!-- No Data -->
     <div v-if="!hasData" class="card text-center py-16">
@@ -138,7 +82,7 @@
           <div class="flex items-start justify-between gap-3">
             <div class="flex-1 min-w-0">
               <!-- Label -->
-              <p class="text-[10px] font-bold uppercase tracking-widest text-violet-400 mb-1">Topik Rekomendasi</p>
+              <p class="text-xs font-bold text-violet-400 mb-1">Topik Rekomendasi</p>
               <!-- Nama cluster -->
               <h3 class="text-base font-bold text-slate-800 leading-snug mb-2">{{ clusterDisplayName(cluster) }}</h3>
 
@@ -156,14 +100,14 @@
             <div class="shrink-0 flex flex-col items-end gap-1.5">
               <span
                 v-if="cluster.isCrossProdi"
-                class="inline-flex items-center gap-1 px-2.5 py-1 bg-gradient-to-r from-blue-500 to-pink-500 text-white text-[10px] font-bold rounded-full"
+                class="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-600 text-white text-[10px] font-bold rounded-full"
               >
                 <span class="w-1.5 h-1.5 bg-white rounded-full"></span>SI + BD
               </span>
               <span
                 v-if="cluster.collaborationPotential === 'high'"
                 class="px-2.5 py-1 bg-amber-100 text-amber-700 text-[10px] font-bold rounded-full"
-              >🤝 Siap Kolaborasi</span>
+              >Siap Kolaborasi</span>
             </div>
           </div>
 
@@ -190,12 +134,12 @@
         >
           <!-- Narrative -->
           <div v-if="cluster.narrative" class="flex items-start gap-2.5">
-            <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-1 shrink-0 w-16">Observasi</span>
+            <span class="text-xs font-semibold text-slate-500 shrink-0 w-16">Observasi</span>
             <p class="text-xs text-slate-700 leading-relaxed flex-1">{{ cluster.narrative }}</p>
           </div>
           <!-- Recommendation -->
           <div v-if="cluster.recommendation" class="flex items-start gap-2.5">
-            <span class="text-[10px] font-bold uppercase tracking-widest text-blue-500 mt-1 shrink-0 w-16">Saran AI</span>
+            <span class="text-xs font-semibold text-slate-500 shrink-0 w-16">Saran</span>
             <p class="text-xs text-slate-800 leading-relaxed flex-1 font-medium">{{ cluster.recommendation }}</p>
           </div>
         </div>
@@ -238,6 +182,8 @@
 
 <script>
 import { prodiRegistry, prodiList } from '../data/prodi/index.js';
+import KpiCard from './ui/KpiCard.vue';
+import AiNote from './ui/AiNote.vue';
 
 export default {
   name: 'ResearchClusters',
@@ -246,8 +192,14 @@ export default {
       type: String,
       default: 'penelitian',
       validator: (v) => ['penelitian', 'pengabdian'].includes(v)
+    },
+    // true = sembunyikan toggle Penelitian/Pengabdian (dipakai di menu Pengabdian)
+    lockType: {
+      type: Boolean,
+      default: false
     }
   },
+  components: { KpiCard, AiNote },
   data() {
     return {
       activeType: this.initialType,
@@ -255,8 +207,8 @@ export default {
       expandedClusters: [],
       filters: [
         { key: 'all',           label: 'Semua Klaster' },
-        { key: 'crossProdi',    label: '🔗 Lintas Prodi (SI+BD)' },
-        { key: 'highPotential', label: '🤝 Siap Kolaborasi' },
+        { key: 'crossProdi',    label: 'Lintas Prodi' },
+        { key: 'highPotential', label: 'Siap Kolaborasi' },
       ]
     };
   },

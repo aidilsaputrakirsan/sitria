@@ -2,7 +2,7 @@
 
 ## 📋 Ringkasan
 
-Berdasarkan analisis codebase, **YA, script SINTA scraper akan menarik data untuk SEMUA dosen yang didaftarkan**, tidak hanya satu prodi saja. Script ini mengambil data publik dari SINTA **TANPA PERLU LOGIN**, karena profil SINTA sifatnya terbuka dan dapat diakses secara publik.
+Berdasarkan analisis codebase, **YA, script SINTA scraper akan menarik data untuk SEMUA dosen yang didaftarkan**, tidak hanya satu prodi saja. Script ini **login ke SINTA** memakai akun di file `.env` (`SINTA_USERNAME`, `SINTA_PASSWORD`).
 
 ---
 
@@ -16,9 +16,10 @@ Berdasarkan analisis codebase, **YA, script SINTA scraper akan menarik data untu
 
 ### Apakah Perlu Login ke SINTA?
 
-**TIDAK perlu login**. Script menggunakan **web scraping** untuk mengakses halaman profil publik SINTA:
-- URL: `https://sinta.kemdiktisaintek.go.id/authors/profile/{SINTA_ID}`
-- Akses dilakukan sebagai visitor biasa (tanpa autentikasi)
+**YA, perlu login** (diperbarui). Profil SINTA memang publik, tetapi tanpa login hanya 10 item pertama per kategori yang tampil dan pagination tidak berfungsi.
+- Login: `https://sinta.kemdiktisaintek.go.id/logins/do_login` memakai `SINTA_USERNAME` & `SINTA_PASSWORD` dari `.env`
+- Profil: `https://sinta.kemdiktisaintek.go.id/authors/profile/{SINTA_ID}`
+- Jika kredensial kosong atau salah, scraper berhenti dengan pesan error
 
 ---
 
@@ -38,7 +39,7 @@ flowchart TD
     F -->|TIDAK| G[⏭️ Skip - tidak ada SINTA ID]
     F -->|YA| H[📋 Tambah ke daftar scraping]
     
-    H --> I["🌐 HTTP Request ke SINTA<br/>(tanpa login)"]
+    H --> I["🌐 HTTP Request ke SINTA<br/>(sesi login)"]
     
     I --> J[📄 Scrape Main Page<br/>- Profile, Stats, H-Index]
     J --> K[📑 Scrape Documents<br/>- Scopus Q1-Q4<br/>- SINTA S1-S6]
@@ -105,7 +106,7 @@ sequenceDiagram
     
     loop Untuk setiap dosen dengan sintaId
         Script->>SINTA: GET /authors/profile/{sintaId}
-        Note over Script,SINTA: No login required!<br/>Public profile access
+        Note over Script,SINTA: Login via .env<br/>agar pagination aktif
         SINTA-->>Script: HTML Page
         Script->>Script: Parse dengan BeautifulSoup
         
@@ -232,4 +233,4 @@ python sinta_scraper.py
 
 - **Rate Limiting**: 2 detik delay antar request
 - **Timeout**: 30 detik per request
-- **Akses Publik**: Tidak memerlukan login SINTA
+- **Login**: Memerlukan akun SINTA di `.env` agar semua halaman data terbaca

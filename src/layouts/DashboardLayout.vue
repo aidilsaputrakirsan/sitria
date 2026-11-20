@@ -2,113 +2,67 @@
   <div class="flex h-screen bg-slate-50 text-slate-600 font-sans selection:bg-rose-500/30">
     <!-- Sidebar -->
     <aside 
-      class="fixed inset-y-0 left-0 z-50 w-72 bg-white/80 backdrop-blur-xl border-r border-slate-200 transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:inset-0 flex flex-col shadow-[4px_0_24px_-12px_rgba(0,0,0,0.1)]"
+      class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-slate-200 transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:inset-0 flex flex-col"
       :class="mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'"
     >
       <!-- Sidebar Header -->
-      <div class="h-24 flex items-center px-6 border-b border-slate-100/80 bg-slate-50/50 backdrop-blur-sm">
-        <div class="flex items-center gap-3 group cursor-pointer w-full">
-          <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm border border-slate-100 p-1.5 shrink-0 group-hover:shadow-md transition-shadow">
+      <div class="h-20 flex items-center px-5 border-b border-slate-100">
+        <div class="flex items-center gap-3 w-full">
+          <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center border border-slate-200 p-1.5 shrink-0">
             <img :src="`${baseUrl}images/logoSITRIA.png`" alt="SITRIA" class="w-full h-full object-contain" />
           </div>
           <div class="flex-1 min-w-0">
-            <h1 class="font-black text-lg text-slate-800 tracking-tight group-hover:text-blue-600 transition-colors leading-tight">
-              SITRIA <span class="text-slate-400 font-bold">·</span> FSTI
+            <h1 class="font-black text-lg tracking-tight leading-tight">
+              <GradientText :colors="['#1e3a8a', '#2563eb', '#38bdf8', '#2563eb', '#1e3a8a']" :animation-speed="10">SITRIA</GradientText>
+              <span class="text-slate-300 font-bold"> · </span><span class="text-slate-700">FSTI</span>
             </h1>
-            <p class="text-[9px] uppercase tracking-widest text-slate-400 font-bold group-hover:text-slate-500 transition-colors leading-tight mt-0.5">Sistem Informasi Tridarma Akademik</p>
+            <p class="text-xs text-slate-400 leading-tight mt-0.5">Sistem Informasi Tridarma Akademik</p>
           </div>
         </div>
       </div>
 
       <!-- Navigation -->
-      <nav class="flex-1 overflow-y-auto py-8 px-4 space-y-2 custom-scrollbar">
-        <template v-for="(item, index) in menuItems" :key="item.isHeader ? `h-${item.label}` : item.path">
-          <!-- Section Label -->
-          <div
-            v-if="item.isHeader"
-            class="px-4 mt-6 mb-2 flex items-center gap-3 animate-fade-in-up"
-            :style="{ animationDelay: `${index * 50}ms` }"
-          >
-            <span class="text-[10px] font-black text-slate-400/80 uppercase tracking-widest">{{ item.label }}</span>
-            <div class="h-px bg-gradient-to-r from-slate-200 to-transparent flex-1"></div>
-          </div>
-
-          <!-- Menu Link -->
+      <nav class="flex-1 overflow-y-auto py-5 px-3 space-y-0.5 custom-scrollbar">
+        <template v-for="item in menuItems" :key="item.isHeader ? `h-${item.label}` : item.path">
+          <p v-if="item.isHeader" class="px-3 pt-5 pb-1.5 text-xs font-semibold text-slate-400">{{ item.label }}</p>
           <router-link
             v-else
             :to="item.path"
-            class="group flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-all duration-300 relative overflow-hidden animate-fade-in-left"
-            :style="{ animationDelay: `${index * 50}ms` }"
-            active-class="bg-blue-50/80 text-blue-600 shadow-sm border border-blue-100/50"
-            :class="$route.path === item.path ? '' : 'text-slate-500 hover:text-slate-900 hover:bg-white hover:shadow-sm hover:border-slate-100 border border-transparent'"
+            class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors"
+            :class="$route.path === item.path
+              ? 'bg-slate-100 font-semibold text-slate-900'
+              : 'font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-900'"
           >
-            <!-- Active Indicator -->
-            <div 
-              class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-500 rounded-r-full transition-all duration-300"
-              :class="$route.path === item.path ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-50 group-hover:scale-y-75 group-hover:opacity-30'"
-            ></div>
-
-            <component 
-              :is="item.icon" 
-              class="w-5 h-5 transition-transform duration-300 group-hover:scale-110 group-active:scale-95" 
-              :class="$route.path === item.path ? 'text-blue-500' : 'text-slate-400 group-hover:text-blue-500'"
+            <component
+              :is="item.icon"
+              class="h-5 w-5"
+              :class="$route.path === item.path ? 'text-blue-600' : 'text-slate-400'"
             />
-            <span class="relative z-10 font-semibold tracking-wide">{{ item.label }}</span>
-            
-            <!-- Hover Shine Effect -->
-            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out"></div>
+            <span>{{ item.label }}</span>
           </router-link>
         </template>
       </nav>
 
-      <!-- Data Source Info -->
-      <div class="px-4 pt-3">
-        <div class="p-4 rounded-xl bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-lg shadow-slate-900/10 relative overflow-hidden">
-          <div class="absolute top-0 right-0 w-16 h-16 bg-blue-500/20 rounded-full blur-xl -translate-y-1/2 translate-x-1/2"></div>
-          <div class="relative z-10">
-            <div class="flex items-center gap-2 mb-2">
-              <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sumber Data</p>
-            </div>
-            <p class="text-xs text-slate-200 leading-relaxed mb-2">
-              Data diambil otomatis dari:
-            </p>
-            <div class="space-y-1.5">
-              <a href="https://sinta.kemdiktisaintek.go.id" target="_blank" rel="noopener" class="flex items-center gap-1.5 text-xs font-semibold text-white hover:text-blue-300 transition-colors group">
-                <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
-                <span>SINTA Kemendiktisaintek</span>
-                <svg class="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-              </a>
-              <a href="https://scholar.google.com" target="_blank" rel="noopener" class="flex items-center gap-1.5 text-xs font-semibold text-white hover:text-blue-300 transition-colors group">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                <span>Google Scholar</span>
-                <svg class="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-              </a>
-              <a href="https://pddikti.kemdiktisaintek.go.id" target="_blank" rel="noopener" class="flex items-center gap-1.5 text-xs font-semibold text-white hover:text-blue-300 transition-colors group">
-                <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
-                <span>PDDikti Kemendiktisaintek</span>
-                <svg class="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-              </a>
-              <a href="https://repository.itk.ac.id" target="_blank" rel="noopener" class="flex items-center gap-1.5 text-xs font-semibold text-white hover:text-blue-300 transition-colors group">
-                <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
-                <span>Repository ITK</span>
-                <svg class="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-              </a>
-            </div>
+      <!-- Sumber data + kredit (ringkas) -->
+      <div class="px-5 pt-4 pb-5 border-t border-slate-100 space-y-4">
+        <div>
+          <p class="text-xs font-semibold text-slate-400 mb-2">Sumber data</p>
+          <div class="flex flex-wrap gap-x-3 gap-y-1.5">
+            <a
+              v-for="src in dataSources"
+              :key="src.label"
+              :href="src.href"
+              target="_blank"
+              rel="noopener"
+              class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-blue-600 transition-colors"
+            >
+              <span class="w-1.5 h-1.5 rounded-full" :class="src.dot"></span>{{ src.label }}
+            </a>
           </div>
         </div>
-      </div>
-
-      <!-- Credit -->
-      <div class="px-4 pt-3 pb-4">
-        <div class="flex items-center gap-3 px-2 py-1">
-          <img :src="`${baseUrl}images/profil.jpg`" alt="ADL" class="w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm shrink-0" />
-          <div class="overflow-hidden">
-            <p class="text-[9px] uppercase tracking-widest text-slate-400 font-bold leading-none">Dibuat oleh</p>
-            <p class="text-sm font-black text-slate-700 tracking-tight mt-1">ADL</p>
-          </div>
+        <div class="flex items-center gap-3">
+          <img :src="`${baseUrl}images/profil.jpg`" alt="ADL" class="w-8 h-8 rounded-full object-cover border-2 border-white shadow-sm shrink-0" />
+          <p class="text-xs text-slate-500 leading-tight">Dibuat oleh <span class="font-black text-slate-700">ADL</span></p>
         </div>
       </div>
     </aside>
@@ -130,7 +84,7 @@
             </div>
             <div class="flex flex-col leading-tight">
               <span class="font-bold text-slate-800 text-sm">SITRIA <span class="text-slate-400">·</span> FSTI</span>
-              <span class="text-[8px] uppercase tracking-widest text-slate-400 font-bold">Tridarma Akademik</span>
+              <span class="text-[11px] text-slate-400">Tridarma Akademik</span>
             </div>
          </div>
          <button @click="mobileMenuOpen = true" class="p-2 text-slate-500 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition-colors">
@@ -141,7 +95,9 @@
       </div>
 
       <!-- Content -->
-      <div class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 md:pt-10 scroll-smooth">
+      <!-- id dipakai Vue Bits FadeContent (GSAP ScrollTrigger) sebagai scroller -->
+      <div id="snap-main-container" class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 md:pt-10 scroll-smooth">
+        <ClickSpark spark-color="#3b82f6" :spark-size="9" :spark-radius="22" :spark-count="7" :duration="420" class-name="!h-auto">
         <div class="max-w-7xl mx-auto w-full">
            <router-view v-slot="{ Component }">
             <transition 
@@ -158,16 +114,31 @@
             </transition>
           </router-view>
         </div>
+        </ClickSpark>
       </div>
     </main>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import GradientText from '../components/vue-bits/GradientText.vue'
+import ClickSpark from '../components/vue-bits/ClickSpark.vue'
 
 const mobileMenuOpen = ref(false)
 const baseUrl = import.meta.env.BASE_URL
+const route = useRoute()
+
+// Tutup menu mobile setiap kali pindah halaman
+watch(() => route.path, () => { mobileMenuOpen.value = false })
+
+const dataSources = [
+  { label: 'SINTA', href: 'https://sinta.kemdiktisaintek.go.id', dot: 'bg-blue-400' },
+  { label: 'Google Scholar', href: 'https://scholar.google.com', dot: 'bg-emerald-400' },
+  { label: 'PDDikti', href: 'https://pddikti.kemdiktisaintek.go.id', dot: 'bg-amber-400' },
+  { label: 'Repository ITK', href: 'https://repository.itk.ac.id', dot: 'bg-purple-400' },
+]
 
 // Modern Minimalist Icons
 const DashboardIcon = { template: '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>' }
@@ -207,48 +178,4 @@ const menuItems = [
   background-color: #94a3b8;
 }
 
-/* Animations */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeInLeft {
-  from { opacity: 0; transform: translateX(-10px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-.animate-fade-in-up {
-  animation: fadeInUp 0.5s ease-out forwards;
-  opacity: 0; /* Star hidden */
-}
-
-.animate-fade-in-left {
-  animation: fadeInLeft 0.5s ease-out forwards;
-  opacity: 0; /* Start hidden */
-}
-
-/* Page Transitions */
-.page-enter-active,
-.page-leave-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.page-enter-from,
-.page-leave-to {
-  opacity: 0;
-  transform: translateY(10px);
-}
-</style>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
 </style>

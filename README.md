@@ -53,7 +53,7 @@ Sistem telah mendukung multi-skala institusi. Arsitektur data diubah menjadi ber
 ### Alur Kerja (SINTA Data Workflow)
 Data di-generate secara asinkronus menggunakan Pipeline Python:
 1. **Input File**: Cukup definisikan SINTA ID Dosen ke dalam `src/data/prodi/{kode-prodi}/lecturers.json`.
-2. **SINTA Scraper**: Bot men-scrape website rekapitulasi publik SINTA (Tanpa Butuh Autentikasi Login) guna menarik data performa riset.
+2. **SINTA Scraper**: Bot login ke SINTA memakai akun dari file `.env`, lalu men-scrape profil dosen. Login diperlukan karena tanpa login SINTA hanya menampilkan 10 item pertama per kategori (pagination terkunci).
 3. **Data Analytics**: Sistem memproses struktur teks (TF-IDF Vect, K-Means Clustering) guna membentuk jaringan konektivitas riset antardepartemen.
 4. **Data Injection**: Menghasilkan file JSON optimasi (`sinta_data.json`, `expertise_data.json`, `clusters_data.json`, `roadmap_data.json`) per prodi yang siap dikonsumsi langsung oleh sistem Frontend.
 
@@ -76,19 +76,28 @@ npm install
 
 # 3. Environment Python Setup
 pip install -r scripts/requirements.txt
+
+# 4. Kredensial SINTA (hanya untuk menjalankan scraper, tidak dibutuhkan frontend)
+cat > .env <<'ENV'
+SINTA_USERNAME=email_akun_sinta
+SINTA_PASSWORD=password_akun_sinta
+ENV
 ```
+
+> `.env` sudah masuk `.gitignore`. Jangan pernah commit file ini.
 
 ### 3. Cara Menambahkan Data / Prodi Baru
 Ingin mengintegrasikan prodi baru misal `"teknik-elektro"`:
-1. Buat folder config di `src/data/prodi/teknik-elektro/lecturers.json`. Formating parameter minimal butuh `"name"` dan `"sintaId"`.
+1. Buat folder config di `src/data/prodi/teknik-elektro/lecturers.json`. Format minimal butuh `"name"` dan `"sintaId"`.
 2. Jalankan perintah scrape pipeline:
    ```bash
-   python scripts/sinta_scraper.py teknik-elektro
+   python scripts/sinta_scraper.py teknik-elektro          # butuh .env (akun SINTA)
    python scripts/build_expertise_data.py teknik-elektro
-   python scripts/research_clustering.py teknik-elektro
-   
-   # Terakhir, build roadmap global lintas institusional
-   python scripts/research_roadmap.py
+   python scripts/build_roadmap_mapping.py teknik-elektro  # opsional: pemetaan roadmap (bukti AMI)
+
+   # Lintas prodi (diproses untuk semua prodi sekaligus)
+   python scripts/build_clusters.py
+   python scripts/build_roadmap.py
    ```
 3. Registrasikan mapping prodi tersebut di file `src/data/prodi/index.js` (Ubah status flag menjadi `hasData: true`).
 4. Dashboard & Graph Analytics siap digunakan.

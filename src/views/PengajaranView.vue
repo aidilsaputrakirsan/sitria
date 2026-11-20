@@ -1,29 +1,17 @@
 <template>
   <div class="space-y-6">
-    <!-- Header -->
-    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-      <div class="flex flex-col sm:flex-row sm:items-start gap-4">
-        <div class="flex items-start gap-4 flex-1 min-w-0">
-          <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
-          </div>
-          <div class="min-w-0 flex-1">
-            <h1 class="text-2xl font-black text-slate-900 mb-1">Pengajaran</h1>
-            <p class="text-sm text-slate-500 leading-relaxed">
-              Mata kuliah diampu, riwayat pendidikan, HKI, dan bimbingan TA per dosen — sumber: PDDikti &amp; Repository ITK.
-            </p>
-          </div>
-        </div>
-        <div class="flex items-center gap-2 sm:shrink-0">
-          <label class="text-xs font-semibold text-slate-500">Prodi:</label>
-          <select v-model="selectedProdi" class="flex-1 sm:flex-none text-sm font-semibold text-slate-700 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-200">
-            <option v-for="p in prodiWithData" :key="p.slug" :value="p.slug">{{ p.name }}</option>
-          </select>
-        </div>
-      </div>
-    </div>
+    <PageHeader
+      title="Pengajaran"
+      description="Mata kuliah diampu, riwayat pendidikan, HKI, dan bimbingan tugas akhir per dosen."
+      :meta="meta"
+    >
+      <!-- Pemilih prodi hanya muncul bila ada lebih dari satu prodi yang punya data PDDikti -->
+      <template v-if="prodiWithData.length > 1" #actions>
+        <select v-model="selectedProdi" class="text-sm font-semibold text-slate-700 bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-200">
+          <option v-for="p in prodiWithData" :key="p.slug" :value="p.slug">{{ p.name }}</option>
+        </select>
+      </template>
+    </PageHeader>
 
     <!-- Empty state -->
     <div v-if="!data" class="bg-white rounded-2xl border-2 border-dashed border-slate-200 p-12 text-center">
@@ -32,13 +20,9 @@
 
     <template v-else>
       <!-- Summary Stats -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div v-for="s in summary" :key="s.label" class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
-          <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">{{ s.label }}</p>
-          <p class="text-2xl font-black text-slate-900 mt-1">{{ s.value.toLocaleString('id-ID') }}</p>
-          <p class="text-xs text-slate-500 mt-0.5">{{ s.hint }}</p>
-        </div>
-      </div>
+      <FadeContent :stagger="0.08" :duration="0.6" class-name="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <KpiCard v-for="s in summary" :key="s.label" :label="s.label" :value="s.value" :hint="s.hint" accent="#0891b2" size="sm" />
+      </FadeContent>
 
       <!-- Two-column: lecturer list + detail panel -->
       <div class="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
@@ -84,7 +68,7 @@
           <!-- Identity card -->
           <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
             <div class="flex items-start gap-4 flex-wrap">
-              <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 text-white flex items-center justify-center text-lg font-bold shrink-0">
+              <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center text-lg font-bold shrink-0">
                 {{ initials(selected.name) }}
               </div>
               <div class="flex-1 min-w-0">
@@ -112,15 +96,15 @@
             <!-- Mini stats -->
             <div class="grid grid-cols-3 gap-3 mt-5 pt-5 border-t border-slate-100">
               <div>
-                <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Semester Mengajar</p>
+                <p class="text-[11px] font-bold text-slate-400">Semester Mengajar</p>
                 <p class="text-xl font-black text-slate-900 mt-0.5">{{ selected.stats.totalSemestersTaught }}</p>
               </div>
               <div>
-                <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Mata Kuliah Unik</p>
+                <p class="text-[11px] font-bold text-slate-400">Mata Kuliah Unik</p>
                 <p class="text-xl font-black text-slate-900 mt-0.5">{{ selected.stats.totalUniqueCourses }}</p>
               </div>
               <div>
-                <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Kelas</p>
+                <p class="text-[11px] font-bold text-slate-400">Total Kelas</p>
                 <p class="text-xl font-black text-slate-900 mt-0.5">{{ selected.stats.totalClassesTaught }}</p>
               </div>
             </div>
@@ -219,7 +203,7 @@
             <template v-else>
               <!-- Distribusi per tahun -->
               <div>
-                <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Distribusi per Tahun</p>
+                <p class="text-[11px] font-bold text-slate-400 mb-2">Distribusi per Tahun</p>
                 <div class="flex items-end gap-2 h-24 border-b border-slate-100 pb-1">
                   <div
                     v-for="(count, year) in supervisionFor(selected).byYear"
@@ -237,7 +221,7 @@
               <!-- Breakdown peran -->
               <div v-if="Object.keys(supervisionFor(selected).byRole).length">
                 <div class="flex items-center justify-between mb-2">
-                  <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Peran</p>
+                  <p class="text-[11px] font-bold text-slate-400">Peran</p>
                   <button
                     @click="showRoleInfo = !showRoleInfo"
                     class="text-[10px] font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1"
@@ -267,7 +251,7 @@
 
               <!-- Daftar tesis -->
               <div>
-                <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+                <p class="text-[11px] font-bold text-slate-400 mb-2">
                   Daftar Tugas Akhir ({{ supervisionFor(selected).totalSupervised }})
                 </p>
                 <div class="space-y-2 max-h-[480px] overflow-y-auto pr-1">
@@ -310,6 +294,12 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { prodiList, prodiRegistry } from '../data/prodi/index.js'
+import { relativeTime, latestGeneratedAt } from '../utils/format.js'
+import PageHeader from '../components/ui/PageHeader.vue'
+import KpiCard from '../components/ui/KpiCard.vue'
+import FadeContent from '../components/vue-bits/FadeContent.vue'
+
+const meta = `PDDikti diperbarui ${relativeTime(latestGeneratedAt('pddiktiData'))} · Repository ITK diperbarui ${relativeTime(latestGeneratedAt('supervisionData'))}`
 
 const prodiWithData = computed(() => prodiList.filter(p => prodiRegistry[p.slug]?.pddiktiData))
 const selectedProdi = ref(prodiWithData.value[0]?.slug || null)

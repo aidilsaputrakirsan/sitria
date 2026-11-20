@@ -1,114 +1,30 @@
 <template>
   <div class="space-y-6">
-    <!-- 1. HEADER + OVERVIEW -->
-    <div class="card bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-slate-700">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-4">
-          <div class="relative">
-            <div class="w-14 h-14 bg-gradient-to-br from-amber-500 via-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/30">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-            </div>
-            <div class="absolute inset-0 rounded-2xl bg-amber-500/30 animate-ping"></div>
-          </div>
-          <div>
-            <div class="flex items-center gap-3">
-              <h1 class="text-2xl font-black text-white tracking-tight">Dana & Hibah</h1>
-              <span class="px-2 py-0.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[10px] font-bold rounded-full uppercase tracking-wider">Analytics</span>
-            </div>
-            <p class="text-sm text-slate-400 mt-0.5">Pendanaan Penelitian & Pengabdian | Data SINTA</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-4">
-          <div class="hidden md:flex flex-col items-end">
-            <span class="text-xs uppercase tracking-wider text-slate-500 font-bold">Total Dana</span>
-            <span class="text-sm font-semibold text-slate-300">{{ formatCurrency(totalFunding) }}</span>
-          </div>
-        </div>
+    <!-- 1. FILTER PRODI + KPI DANA -->
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="inline-flex flex-wrap gap-1 rounded-2xl border border-slate-200 bg-white p-1 shadow-sm">
+        <button
+          v-for="opt in ['all', ...prodiList]"
+          :key="opt"
+          @click="selectedProdi = opt"
+          class="rounded-xl px-3.5 py-2 text-sm font-semibold transition-all"
+          :class="selectedProdi === opt ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'"
+        >{{ opt === 'all' ? 'Semua Prodi' : opt }}</button>
       </div>
-
-      <!-- Summary Stats Cards -->
-      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-        <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 text-center border border-blue-200 hover:shadow-md transition-all group">
-          <div class="text-2xl font-black text-blue-600 group-hover:scale-110 transition-transform">{{ totalResearchCount }}</div>
-          <div class="text-xs uppercase tracking-wider text-blue-700 mt-1 font-bold">Penelitian</div>
-        </div>
-        <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-4 text-center border border-emerald-200 hover:shadow-md transition-all group">
-          <div class="text-2xl font-black text-emerald-600 group-hover:scale-110 transition-transform">{{ totalServiceCount }}</div>
-          <div class="text-xs uppercase tracking-wider text-emerald-700 mt-1 font-bold">Pengabdian</div>
-        </div>
-        <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-4 text-center border border-amber-200 hover:shadow-md transition-all group">
-          <div class="text-lg font-black text-amber-600 group-hover:scale-110 transition-transform">{{ formatCurrencyShort(totalResearchFunding) }}</div>
-          <div class="text-xs uppercase tracking-wider text-amber-700 mt-1 font-bold">Dana Penelitian</div>
-        </div>
-        <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 text-center border border-orange-200 hover:shadow-md transition-all group">
-          <div class="text-lg font-black text-orange-600 group-hover:scale-110 transition-transform">{{ formatCurrencyShort(totalServiceFunding) }}</div>
-          <div class="text-xs uppercase tracking-wider text-orange-700 mt-1 font-bold">Dana Pengabdian</div>
-        </div>
-        <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 text-center border border-purple-200 hover:shadow-md transition-all group">
-          <div class="text-2xl font-black text-purple-600 group-hover:scale-110 transition-transform">{{ lecturerCount }}</div>
-          <div class="text-xs uppercase tracking-wider text-purple-700 mt-1 font-bold">Dosen</div>
-        </div>
-        <div class="bg-gradient-to-br from-rose-50 to-rose-100 rounded-xl p-4 text-center border border-rose-200 hover:shadow-md transition-all group">
-          <div class="text-lg font-black text-rose-600 group-hover:scale-110 transition-transform">{{ formatCurrencyShort(avgFundingPerLecturer) }}</div>
-          <div class="text-xs uppercase tracking-wider text-rose-700 mt-1 font-bold">Rata-rata/Dosen</div>
-        </div>
-      </div>
-
-      <!-- Penjelasan Overview -->
-      <div class="mt-4 p-3 bg-slate-800/50 rounded-lg text-xs text-slate-300 border border-slate-600">
-        <div class="flex items-start gap-2">
-          <svg class="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-          <div>
-            <strong class="text-amber-400">Tentang Data Ini:</strong>
-            <span class="ml-1">Data diambil dari SINTA. Angka di atas menghitung <strong>judul unik</strong> yang tercatat di SINTA (tanpa duplikasi). Untuk melihat detail per dosen termasuk partisipasi sebagai anggota di proyek luar prodi, lihat tabel "Kinerja Dosen" di bawah.</span>
-          </div>
-        </div>
-      </div>
+      <p class="text-xs text-slate-400">Jumlah dihitung per <strong class="text-slate-500">judul unik</strong> di SINTA</p>
     </div>
 
-    <!-- 2. FILTER PRODI -->
-    <div class="card">
-      <div class="flex items-center gap-3 mb-3">
-        <span class="text-sm font-bold text-slate-700">Filter Program Studi:</span>
-        <span class="text-xs text-slate-400">Pilih prodi untuk melihat data spesifik</span>
-      </div>
-      <div class="flex flex-wrap gap-2">
-        <button
-          @click="selectedProdi = 'all'"
-          :class="[
-            'px-4 py-2 rounded-lg text-sm font-bold transition-all',
-            selectedProdi === 'all'
-              ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg'
-              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-          ]"
-        >
-          Semua Prodi
-        </button>
-        <button
-          v-for="prodi in prodiList"
-          :key="prodi"
-          @click="selectedProdi = prodi"
-          :class="[
-            'px-4 py-2 rounded-lg text-sm font-bold transition-all',
-            selectedProdi === prodi
-              ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg'
-              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-          ]"
-        >
-          {{ prodi }}
-        </button>
-      </div>
-    </div>
+    <FadeContent :stagger="0.07" :duration="0.6" class-name="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <KpiCard label="Dana Penelitian" :value="totalResearchFunding" kind="currency" accent="#2563eb" :hint="`${totalResearchCount} judul penelitian`" />
+      <KpiCard label="Dana Pengabdian" :value="totalServiceFunding" kind="currency" accent="#059669" :hint="`${totalServiceCount} kegiatan pengabdian`" />
+      <KpiCard label="Total Dana" :value="totalFunding" kind="currency" accent="#d97706" hint="Penelitian + pengabdian" />
+      <KpiCard label="Rata-rata per Dosen" :value="avgFundingPerLecturer" kind="currency" accent="#7c3aed" :hint="`Dibagi ${lecturerCount} dosen`" />
+    </FadeContent>
 
     <!-- 3. RINGKASAN PER PRODI (dipindah ke atas) -->
     <div class="card hover:shadow-lg transition-shadow">
       <div class="mb-4">
         <div class="flex items-center gap-2">
-          <span class="w-3 h-3 bg-purple-500 rounded-full"></span>
           <h3 class="text-lg font-bold text-slate-800">
             {{ selectedProdi === 'all' ? 'Ringkasan per Program Studi' : 'Ringkasan ' + selectedProdi }}
           </h3>
@@ -118,15 +34,6 @@
         </p>
       </div>
 
-      <!-- Penjelasan -->
-      <div class="mb-4 p-3 bg-purple-50 rounded-lg text-xs text-purple-700 border border-purple-200">
-        <strong>Cara Membaca:</strong>
-        <ul class="mt-1 ml-4 list-disc space-y-0.5">
-          <li><strong>Penelitian/Pengabdian</strong> = jumlah kegiatan yang tercatat di SINTA</li>
-          <li><strong>Dana</strong> = total pendanaan yang diperoleh (dalam Rupiah)</li>
-          <li><strong>Rata-rata/Dosen</strong> = total dana dibagi jumlah dosen (indikator produktivitas)</li>
-        </ul>
-      </div>
 
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
@@ -148,15 +55,15 @@
                 <td class="py-3 px-4 font-medium text-slate-800">{{ summary.prodi }}</td>
                 <td class="py-3 px-4 text-center">{{ summary.lecturerCount }}</td>
                 <td class="py-3 px-4 text-center">
-                  <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">{{ summary.totalResearchCount }}</span>
+                  <span class="font-semibold tabular-nums text-slate-800">{{ summary.totalResearchCount }}</span>
                 </td>
                 <td class="py-3 px-4 text-center">
-                  <span class="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold">{{ summary.totalServiceCount }}</span>
+                  <span class="font-semibold tabular-nums text-slate-800">{{ summary.totalServiceCount }}</span>
                 </td>
-                <td class="py-3 px-4 text-right font-mono text-amber-600">{{ formatCurrency(summary.totalResearchFunding) }}</td>
-                <td class="py-3 px-4 text-right font-mono text-orange-600">{{ formatCurrency(summary.totalServiceFunding) }}</td>
-                <td class="py-3 px-4 text-right font-mono font-bold text-slate-800">{{ formatCurrency(summary.totalResearchFunding + summary.totalServiceFunding) }}</td>
-                <td class="py-3 px-4 text-right font-mono text-purple-600">{{ formatCurrency((summary.totalResearchFunding + summary.totalServiceFunding) / summary.lecturerCount) }}</td>
+                <td class="py-3 px-4 text-right tabular-nums text-slate-700">{{ formatCurrency(summary.totalResearchFunding) }}</td>
+                <td class="py-3 px-4 text-right tabular-nums text-slate-700">{{ formatCurrency(summary.totalServiceFunding) }}</td>
+                <td class="py-3 px-4 text-right font-bold tabular-nums text-slate-800">{{ formatCurrency(summary.totalResearchFunding + summary.totalServiceFunding) }}</td>
+                <td class="py-3 px-4 text-right tabular-nums text-slate-700">{{ formatCurrency((summary.totalResearchFunding + summary.totalServiceFunding) / summary.lecturerCount) }}</td>
               </tr>
             </template>
             <template v-else>
@@ -164,29 +71,29 @@
                 <td class="py-3 px-4 font-medium text-slate-800">Jumlah Total</td>
                 <td class="py-3 px-4 text-center font-bold">{{ lecturerCount }} dosen</td>
                 <td class="py-3 px-4 text-center">
-                  <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">{{ totalResearchCount }}</span>
+                  <span class="font-semibold tabular-nums text-slate-800">{{ totalResearchCount }}</span>
                 </td>
                 <td class="py-3 px-4 text-center">
-                  <span class="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold">{{ totalServiceCount }}</span>
+                  <span class="font-semibold tabular-nums text-slate-800">{{ totalServiceCount }}</span>
                 </td>
-                <td class="py-3 px-4 text-right font-mono text-amber-600 font-bold">{{ formatCurrency(totalResearchFunding) }}</td>
-                <td class="py-3 px-4 text-right font-mono text-orange-600 font-bold">{{ formatCurrency(totalServiceFunding) }}</td>
-                <td class="py-3 px-4 text-right font-mono font-bold text-slate-800">{{ formatCurrency(totalFunding) }}</td>
-                <td class="py-3 px-4 text-right font-mono text-purple-600">-</td>
+                <td class="py-3 px-4 text-right tabular-nums text-slate-700 font-bold">{{ formatCurrency(totalResearchFunding) }}</td>
+                <td class="py-3 px-4 text-right tabular-nums text-slate-700 font-bold">{{ formatCurrency(totalServiceFunding) }}</td>
+                <td class="py-3 px-4 text-right font-bold tabular-nums text-slate-800">{{ formatCurrency(totalFunding) }}</td>
+                <td class="py-3 px-4 text-right tabular-nums text-slate-700">-</td>
               </tr>
               <tr class="border-b border-slate-100 bg-purple-50">
                 <td class="py-3 px-4 font-medium text-purple-800">Rata-rata per Dosen</td>
                 <td class="py-3 px-4 text-center">-</td>
                 <td class="py-3 px-4 text-center">
-                  <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">{{ (totalResearchCount / lecturerCount).toFixed(1) }}</span>
+                  <span class="font-semibold tabular-nums text-slate-800">{{ (totalResearchCount / lecturerCount).toFixed(1) }}</span>
                 </td>
                 <td class="py-3 px-4 text-center">
-                  <span class="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold">{{ (totalServiceCount / lecturerCount).toFixed(1) }}</span>
+                  <span class="font-semibold tabular-nums text-slate-800">{{ (totalServiceCount / lecturerCount).toFixed(1) }}</span>
                 </td>
-                <td class="py-3 px-4 text-right font-mono text-amber-600">{{ formatCurrency(totalResearchFunding / lecturerCount) }}</td>
-                <td class="py-3 px-4 text-right font-mono text-orange-600">{{ formatCurrency(totalServiceFunding / lecturerCount) }}</td>
-                <td class="py-3 px-4 text-right font-mono text-purple-700 font-bold">{{ formatCurrency(avgFundingPerLecturer) }}</td>
-                <td class="py-3 px-4 text-right font-mono text-purple-600">-</td>
+                <td class="py-3 px-4 text-right tabular-nums text-slate-700">{{ formatCurrency(totalResearchFunding / lecturerCount) }}</td>
+                <td class="py-3 px-4 text-right tabular-nums text-slate-700">{{ formatCurrency(totalServiceFunding / lecturerCount) }}</td>
+                <td class="py-3 px-4 text-right tabular-nums text-slate-700 font-bold">{{ formatCurrency(avgFundingPerLecturer) }}</td>
+                <td class="py-3 px-4 text-right tabular-nums text-slate-700">-</td>
               </tr>
             </template>
           </tbody>
@@ -195,15 +102,15 @@
               <td class="py-3 px-4 text-slate-800">TOTAL SEMUA PRODI</td>
               <td class="py-3 px-4 text-center">{{ lecturerCount }}</td>
               <td class="py-3 px-4 text-center">
-                <span class="px-2 py-1 bg-blue-200 text-blue-800 rounded-full text-xs">{{ totalResearchCount }}</span>
+                <span class="font-semibold tabular-nums text-slate-800">{{ totalResearchCount }}</span>
               </td>
               <td class="py-3 px-4 text-center">
-                <span class="px-2 py-1 bg-emerald-200 text-emerald-800 rounded-full text-xs">{{ totalServiceCount }}</span>
+                <span class="font-semibold tabular-nums text-slate-800">{{ totalServiceCount }}</span>
               </td>
-              <td class="py-3 px-4 text-right font-mono text-amber-700">{{ formatCurrency(totalResearchFunding) }}</td>
-              <td class="py-3 px-4 text-right font-mono text-orange-700">{{ formatCurrency(totalServiceFunding) }}</td>
-              <td class="py-3 px-4 text-right font-mono text-slate-900">{{ formatCurrency(totalFunding) }}</td>
-              <td class="py-3 px-4 text-right font-mono text-purple-700">{{ formatCurrency(avgFundingPerLecturer) }}</td>
+              <td class="py-3 px-4 text-right tabular-nums text-slate-700">{{ formatCurrency(totalResearchFunding) }}</td>
+              <td class="py-3 px-4 text-right tabular-nums text-slate-700">{{ formatCurrency(totalServiceFunding) }}</td>
+              <td class="py-3 px-4 text-right tabular-nums text-slate-700">{{ formatCurrency(totalFunding) }}</td>
+              <td class="py-3 px-4 text-right tabular-nums text-slate-700">{{ formatCurrency(avgFundingPerLecturer) }}</td>
             </tr>
           </tfoot>
         </table>
@@ -216,7 +123,6 @@
         <div class="flex items-center justify-between">
           <div>
             <div class="flex items-center gap-2">
-              <span class="w-3 h-3 bg-cyan-500 rounded-full"></span>
               <h3 class="text-lg font-bold text-slate-800">Kinerja Dosen</h3>
             </div>
             <p class="text-xs text-slate-400 mt-1">Detail hibah per dosen di prodi terpilih</p>
@@ -229,20 +135,6 @@
               <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
             </select>
           </div>
-        </div>
-      </div>
-
-      <!-- Penjelasan Tabel -->
-      <div class="mb-4 p-3 bg-cyan-50 rounded-lg text-xs text-cyan-700 border border-cyan-200">
-        <strong>Cara Membaca Tabel:</strong>
-        <ul class="mt-1 ml-4 list-disc space-y-0.5">
-          <li><strong>Sebagai Ketua</strong> = judul dimana dosen menjadi pemimpin (leader)</li>
-          <li><strong>Sebagai Anggota</strong> = judul dimana dosen menjadi anggota, <em>hanya dihitung jika ketuanya dari luar prodi</em></li>
-          <li><strong>Total Judul</strong> = Ketua + Anggota (judul yang bisa diklaim prodi)</li>
-          <li><strong>Total Dana</strong> = akumulasi pendanaan dari semua judul (sebagai ketua)</li>
-        </ul>
-        <div class="mt-2 pt-2 border-t border-cyan-200 text-cyan-600">
-          <em>Catatan: Total di tabel ini mungkin lebih besar dari Overview/Rincian Hibah karena menghitung tambahan partisipasi sebagai anggota di proyek dengan ketua dari luar prodi.</em>
         </div>
       </div>
 
@@ -263,9 +155,9 @@
             <tr class="border-b border-slate-200 bg-slate-50 text-[10px]">
               <th></th>
               <th class="text-center py-2 px-1 bg-blue-50 text-blue-600">Ketua</th>
-              <th class="text-center py-2 px-1 bg-blue-50/50 text-blue-500">Anggota*</th>
+              <th class="text-center py-2 px-1 text-blue-500">Anggota*</th>
               <th class="text-center py-2 px-1 bg-emerald-50 text-emerald-600">Ketua</th>
-              <th class="text-center py-2 px-1 bg-emerald-50/50 text-emerald-500">Anggota*</th>
+              <th class="text-center py-2 px-1 text-emerald-500">Anggota*</th>
               <th></th>
               <th></th>
             </tr>
@@ -275,72 +167,60 @@
               <td class="py-3 px-4">
                 <div class="font-medium text-slate-800">{{ lecturer.name }}</div>
               </td>
-              <td class="py-3 px-2 text-center bg-blue-50/20">
-                <span v-if="lecturer.researchAsLeader > 0" class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">{{ lecturer.researchAsLeader }}</span>
-                <span v-else class="text-slate-300">-</span>
-              </td>
-              <td class="py-3 px-2 text-center bg-blue-50/10">
-                <span v-if="lecturer.researchAsMember > 0" class="px-2 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-bold">{{ lecturer.researchAsMember }}</span>
-                <span v-else class="text-slate-300">-</span>
-              </td>
-              <td class="py-3 px-2 text-center bg-emerald-50/20">
-                <span v-if="lecturer.serviceAsLeader > 0" class="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold">{{ lecturer.serviceAsLeader }}</span>
-                <span v-else class="text-slate-300">-</span>
-              </td>
-              <td class="py-3 px-2 text-center bg-emerald-50/10">
-                <span v-if="lecturer.serviceAsMember > 0" class="px-2 py-1 bg-emerald-50 text-emerald-600 rounded-full text-xs font-bold">{{ lecturer.serviceAsMember }}</span>
+              <td class="py-3 px-2 text-center">
+                <span v-if="lecturer.researchAsLeader > 0" class="font-semibold tabular-nums text-slate-800">{{ lecturer.researchAsLeader }}</span>
                 <span v-else class="text-slate-300">-</span>
               </td>
               <td class="py-3 px-2 text-center">
-                <span class="px-2 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-bold">{{ lecturer.totalTitles }}</span>
+                <span v-if="lecturer.researchAsMember > 0" class="tabular-nums text-slate-600">{{ lecturer.researchAsMember }}</span>
+                <span v-else class="text-slate-300">-</span>
+              </td>
+              <td class="py-3 px-2 text-center">
+                <span v-if="lecturer.serviceAsLeader > 0" class="font-semibold tabular-nums text-slate-800">{{ lecturer.serviceAsLeader }}</span>
+                <span v-else class="text-slate-300">-</span>
+              </td>
+              <td class="py-3 px-2 text-center">
+                <span v-if="lecturer.serviceAsMember > 0" class="tabular-nums text-slate-600">{{ lecturer.serviceAsMember }}</span>
+                <span v-else class="text-slate-300">-</span>
+              </td>
+              <td class="py-3 px-2 text-center">
+                <span class="font-semibold tabular-nums text-slate-800">{{ lecturer.totalTitles }}</span>
               </td>
               <td class="py-3 px-4 text-right">
-                <span class="font-mono text-xs font-bold text-amber-700">{{ formatCurrencyShort(lecturer.totalFunding) }}</span>
+                <span class="text-sm font-semibold tabular-nums text-slate-800">{{ formatCurrencyShort(lecturer.totalFunding) }}</span>
               </td>
             </tr>
           </tbody>
           <tfoot class="sticky bottom-0 bg-slate-100">
             <tr class="font-bold">
               <td class="py-3 px-4 text-slate-800">TOTAL ({{ lecturerPerformance.length }} dosen)</td>
-              <td class="py-3 px-2 text-center bg-blue-100/50">
-                <span class="px-2 py-1 bg-blue-200 text-blue-800 rounded-full text-xs">{{ lecturerPerformanceTotal.researchAsLeader }}</span>
-              </td>
-              <td class="py-3 px-2 text-center bg-blue-50/50">
-                <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">{{ lecturerPerformanceTotal.researchAsMember }}</span>
-              </td>
-              <td class="py-3 px-2 text-center bg-emerald-100/50">
-                <span class="px-2 py-1 bg-emerald-200 text-emerald-800 rounded-full text-xs">{{ lecturerPerformanceTotal.serviceAsLeader }}</span>
-              </td>
-              <td class="py-3 px-2 text-center bg-emerald-50/50">
-                <span class="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs">{{ lecturerPerformanceTotal.serviceAsMember }}</span>
+              <td class="py-3 px-2 text-center">
+                <span class="font-semibold tabular-nums text-slate-800">{{ lecturerPerformanceTotal.researchAsLeader }}</span>
               </td>
               <td class="py-3 px-2 text-center">
-                <span class="px-2 py-1 bg-slate-200 text-slate-800 rounded-full text-xs">{{ lecturerPerformanceTotal.totalTitles }}</span>
+                <span class="font-semibold tabular-nums text-slate-800">{{ lecturerPerformanceTotal.researchAsMember }}</span>
+              </td>
+              <td class="py-3 px-2 text-center">
+                <span class="font-semibold tabular-nums text-slate-800">{{ lecturerPerformanceTotal.serviceAsLeader }}</span>
+              </td>
+              <td class="py-3 px-2 text-center">
+                <span class="font-semibold tabular-nums text-slate-800">{{ lecturerPerformanceTotal.serviceAsMember }}</span>
+              </td>
+              <td class="py-3 px-2 text-center">
+                <span class="font-semibold tabular-nums text-slate-800">{{ lecturerPerformanceTotal.totalTitles }}</span>
               </td>
               <td class="py-3 px-4 text-right">
-                <span class="font-mono text-xs font-bold text-amber-800">{{ formatCurrencyShort(lecturerPerformanceTotal.totalFunding) }}</span>
+                <span class="text-sm font-semibold tabular-nums text-slate-800">{{ formatCurrencyShort(lecturerPerformanceTotal.totalFunding) }}</span>
               </td>
             </tr>
           </tfoot>
         </table>
       </div>
 
-      <!-- Catatan -->
-      <div class="mt-3 p-3 bg-amber-50 rounded-lg text-xs text-amber-700 border border-amber-200">
-        <div class="flex items-start gap-2">
-          <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-          <div>
-            <strong>Catatan:</strong>
-            <ul class="mt-1 ml-4 list-disc space-y-0.5">
-              <li><strong>*Anggota</strong> = hanya dihitung jika ketua penelitian/pengabdian dari <em>luar prodi</em> (kolaborasi eksternal)</li>
-              <li>Jika ketua dan anggota dari prodi sama, judul hanya dihitung sekali di kolom "Ketua"</li>
-              <li><strong>Total Dana</strong> = dana dari judul dimana dosen menjadi ketua</li>
-            </ul>
-          </div>
-        </div>
-      </div>
+      <p class="mt-3 text-xs leading-relaxed text-slate-500">
+        <strong class="text-slate-600">*Anggota</strong> hanya dihitung bila ketuanya dari luar prodi, sehingga total di tabel ini bisa lebih besar dari KPI di atas.
+        Total dana dihitung dari judul tempat dosen menjadi ketua.
+      </p>
     </div>
 
     <!-- 5. VISUALISASI GRAFIK -->
@@ -349,7 +229,6 @@
       <div class="card hover:shadow-lg transition-shadow">
         <div class="mb-4">
           <div class="flex items-center gap-2">
-            <span class="w-3 h-3 bg-amber-500 rounded-full"></span>
             <h3 class="text-lg font-bold text-slate-800">Tren Pendanaan per Tahun</h3>
           </div>
           <p class="text-xs text-slate-400 mt-1">Perbandingan dana penelitian vs pengabdian setiap tahun</p>
@@ -357,25 +236,18 @@
         <div class="h-64">
           <Bar :data="fundingByYearData" :options="barChartOptions" />
         </div>
-        <div class="mt-3 p-2 bg-slate-50 rounded text-xs text-slate-500">
-          <strong>Insight:</strong> Grafik menunjukkan tren pendanaan dari tahun ke tahun. Batang biru = penelitian, hijau = pengabdian.
-        </div>
       </div>
 
       <!-- Funding by Source Chart -->
       <div class="card hover:shadow-lg transition-shadow">
         <div class="mb-4">
           <div class="flex items-center gap-2">
-            <span class="w-3 h-3 bg-blue-500 rounded-full"></span>
             <h3 class="text-lg font-bold text-slate-800">Distribusi Sumber Pendanaan</h3>
           </div>
-          <p class="text-xs text-slate-400 mt-1">Proporsi dana dari berbagai sumber</p>
+          <p class="text-xs text-slate-400 mt-1">Internal = institusi · Eksternal (BIMA) = Kemdiktisaintek</p>
         </div>
         <div class="h-64 flex items-center justify-center">
           <Doughnut :data="fundingBySourceData" :options="doughnutOptions" />
-        </div>
-        <div class="mt-3 p-2 bg-slate-50 rounded text-xs text-slate-500">
-          <strong>Insight:</strong> Internal = dana dari institusi. Eksternal (BIMA) = dana dari Kemdiktisaintek. Lainnya = sumber lain.
         </div>
       </div>
     </div>
@@ -386,18 +258,13 @@
         <div class="flex items-center justify-between">
           <div>
             <div class="flex items-center gap-2">
-              <span class="w-3 h-3 bg-emerald-500 rounded-full"></span>
               <h3 class="text-lg font-bold text-slate-800">Rincian per Jenis Hibah</h3>
             </div>
-            <p class="text-xs text-slate-400 mt-1">{{ grantTypeDetails.length }} kategori hibah ditemukan</p>
+            <p class="text-xs text-slate-400 mt-1">{{ grantTypeDetails.length }} skema hibah · judul unik</p>
           </div>
         </div>
       </div>
 
-      <!-- Penjelasan -->
-      <div class="mb-4 p-3 bg-emerald-50 rounded-lg text-xs text-emerald-700 border border-emerald-200">
-        <strong>Cara Membaca:</strong> Tabel ini mengelompokkan kegiatan berdasarkan jenis skema hibah. Menghitung <strong>judul unik</strong> yang tercatat di SINTA (sama dengan Overview). <em>Catatan: Total mungkin berbeda dengan "Kinerja Dosen" karena tabel tersebut juga menghitung partisipasi sebagai anggota di proyek luar prodi.</em>
-      </div>
 
       <div class="overflow-x-auto max-h-[400px] overflow-y-auto">
         <table class="w-full text-sm">
@@ -418,34 +285,34 @@
                 <div class="text-xs text-slate-400">{{ grant.source }}</div>
               </td>
               <td class="py-3 px-4 text-center">
-                <span class="px-2 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-bold">{{ grant.count }}</span>
+                <span class="font-semibold tabular-nums text-slate-800">{{ grant.count }}</span>
               </td>
               <td class="py-3 px-4 text-center">
-                <span v-if="grant.researchCount > 0" class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">{{ grant.researchCount }}</span>
+                <span v-if="grant.researchCount > 0" class="font-semibold tabular-nums text-slate-800">{{ grant.researchCount }}</span>
                 <span v-else class="text-slate-300">-</span>
               </td>
               <td class="py-3 px-4 text-center">
-                <span v-if="grant.serviceCount > 0" class="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold">{{ grant.serviceCount }}</span>
+                <span v-if="grant.serviceCount > 0" class="font-semibold tabular-nums text-slate-800">{{ grant.serviceCount }}</span>
                 <span v-else class="text-slate-300">-</span>
               </td>
-              <td class="py-3 px-4 text-right font-mono text-amber-600 font-bold">{{ formatCurrency(grant.totalFunding) }}</td>
-              <td class="py-3 px-4 text-right font-mono text-slate-500">{{ formatCurrency(grant.avgFunding) }}</td>
+              <td class="py-3 px-4 text-right tabular-nums text-slate-700 font-bold">{{ formatCurrency(grant.totalFunding) }}</td>
+              <td class="py-3 px-4 text-right tabular-nums text-slate-700">{{ formatCurrency(grant.avgFunding) }}</td>
             </tr>
           </tbody>
           <tfoot class="sticky bottom-0 bg-slate-100">
             <tr class="font-bold">
               <td class="py-3 px-4 text-slate-800">TOTAL</td>
               <td class="py-3 px-4 text-center">
-                <span class="px-2 py-1 bg-slate-200 text-slate-800 rounded-full text-xs">{{ totalResearchCount + totalServiceCount }}</span>
+                <span class="font-semibold tabular-nums text-slate-800">{{ totalResearchCount + totalServiceCount }}</span>
               </td>
               <td class="py-3 px-4 text-center">
-                <span class="px-2 py-1 bg-blue-200 text-blue-800 rounded-full text-xs">{{ totalResearchCount }}</span>
+                <span class="font-semibold tabular-nums text-slate-800">{{ totalResearchCount }}</span>
               </td>
               <td class="py-3 px-4 text-center">
-                <span class="px-2 py-1 bg-emerald-200 text-emerald-800 rounded-full text-xs">{{ totalServiceCount }}</span>
+                <span class="font-semibold tabular-nums text-slate-800">{{ totalServiceCount }}</span>
               </td>
-              <td class="py-3 px-4 text-right font-mono text-amber-700">{{ formatCurrency(totalFunding) }}</td>
-              <td class="py-3 px-4 text-right font-mono text-slate-600">{{ formatCurrency(totalFunding / (totalResearchCount + totalServiceCount || 1)) }}</td>
+              <td class="py-3 px-4 text-right tabular-nums text-slate-700">{{ formatCurrency(totalFunding) }}</td>
+              <td class="py-3 px-4 text-right tabular-nums text-slate-700">{{ formatCurrency(totalFunding / (totalResearchCount + totalServiceCount || 1)) }}</td>
             </tr>
           </tfoot>
         </table>
@@ -458,10 +325,9 @@
         <div class="flex items-center justify-between">
           <div>
             <div class="flex items-center gap-2">
-              <span class="w-3 h-3 bg-rose-500 rounded-full"></span>
               <h3 class="text-lg font-bold text-slate-800">Daftar Detail Kegiatan</h3>
             </div>
-            <p class="text-xs text-slate-400 mt-1">{{ filteredItems.length }} kegiatan ditemukan - klik filter untuk menyaring</p>
+            <p class="text-xs text-slate-400 mt-1">{{ filteredItems.length }} kegiatan · terbaru & dana terbesar di atas</p>
           </div>
           <div class="flex gap-2">
             <button
@@ -495,10 +361,6 @@
         </div>
       </div>
 
-      <!-- Penjelasan -->
-      <div class="mb-4 p-3 bg-rose-50 rounded-lg text-xs text-rose-700 border border-rose-200">
-        <strong>Tentang Data Detail:</strong> Setiap item menampilkan judul kegiatan, ketua pelaksana, anggota tim, jenis hibah, dan jumlah dana. Data diurutkan dari tahun terbaru dan dana terbesar.
-      </div>
 
       <div class="space-y-3 max-h-[600px] overflow-y-auto">
         <div
@@ -574,12 +436,14 @@ import {
   Legend
 } from 'chart.js'
 import { prodiRegistry, prodiList as prodiListData } from '../data/prodi/index.js'
+import KpiCard from './ui/KpiCard.vue'
+import FadeContent from './vue-bits/FadeContent.vue'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend)
 
 export default {
   name: 'FundingDashboard',
-  components: { Bar, Doughnut },
+  components: { Bar, Doughnut, KpiCard, FadeContent },
   data() {
     return {
       selectedProdi: 'all',

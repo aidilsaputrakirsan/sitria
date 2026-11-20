@@ -1,145 +1,25 @@
 <template>
   <div class="space-y-6">
+    <!-- KPI utama (Vue Bits: SpotlightCard + Counter) -->
+    <FadeContent :stagger="0.07" :duration="0.6" class-name="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <KpiCard label="Penelitian" :value="stats.totalResearch" accent="#2563eb" hint="Judul tercatat di SINTA" />
+      <KpiCard label="Pengabdian" :value="stats.totalServices" accent="#059669" hint="Kegiatan PkM tercatat di SINTA" />
+      <KpiCard label="Artikel Terindeks" :value="stats.totalScopus + stats.totalSinta" accent="#4f46e5">
+        <template #hint>
+          <span class="font-semibold text-indigo-600">{{ stats.totalScopus }} Scopus</span> ·
+          <span class="font-semibold text-sky-600">{{ stats.totalSinta }} SINTA</span>
+        </template>
+      </KpiCard>
+      <KpiCard label="Sitasi" :value="stats.totalCitations" accent="#e11d48" hint="Kumulatif, Google Scholar via SINTA" />
+    </FadeContent>
 
-    <!-- ==================== STATISTICS TABLE ==================== -->
-
-    <!-- Header -->
-    <!-- Header -->
-    <div class="relative overflow-hidden rounded-2xl bg-white shadow-xl border border-slate-100">
-      <!-- Background Effects -->
-      <div class="absolute top-0 right-0 w-96 h-96 bg-rose-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-      <div class="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
-      
-      <div class="relative p-6 flex flex-col md:flex-row items-center justify-between gap-6">
-        <div class="flex items-center gap-5">
-          <!-- Pulse Logo -->
-          <div class="relative group">
-            <div class="w-16 h-16 bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
-              <svg class="w-8 h-8 text-white drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
-              </svg>
-            </div>
-            <!-- Pulse ring -->
-            <div class="absolute inset-0 rounded-2xl bg-blue-500/20 animate-ping opacity-75"></div>
-          </div>
-          <div>
-            <div class="flex items-center gap-3 mb-1">
-              <h1 class="text-3xl font-black text-slate-800 tracking-tight leading-none bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600">Galeri Inovasi</h1>
-              <span class="px-2.5 py-0.5 bg-blue-50 text-blue-600 border border-blue-100 text-[10px] font-bold rounded-full uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
-                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
-                Digital Lab
-              </span>
-            </div>
-            <p class="text-slate-500 font-medium">Katalog Riset & Pengembangan Inovasi</p>
-          </div>
-        </div>
-        
-        <div class="flex items-center gap-4 z-10">
-          <div class="hidden md:flex flex-col items-end">
-            <span class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Total Dosen</span>
-            <span class="text-2xl font-bold text-slate-800 leading-none">{{ sintaLecturers.length }}</span>
-          </div>
-        </div>
+    <!-- Sumber pelengkap: satu baris ringkas -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div v-for="m in secondaryStats" :key="m.label" class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3">
+        <span class="text-xs font-semibold text-slate-500">{{ m.label }}</span>
+        <span class="text-lg font-black tabular-nums text-slate-800">{{ m.value }}</span>
       </div>
     </div>
-
-      <!-- Stats Cards Wrapper -->
-      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
-        <!-- Penelitian -->
-        <div class="relative overflow-hidden bg-white p-6 rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-100 group hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-          <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <svg class="w-16 h-16 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
-          </div>
-          <p class="text-sm font-bold text-slate-400 uppercase tracking-wider">Penelitian</p>
-          <div class="mt-2 flex items-baseline gap-2">
-            <span class="text-3xl font-black text-slate-800">{{ stats.totalResearch }}</span>
-            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">+{{ Math.floor(stats.totalResearch * 0.1) }}% this year</span>
-          </div>
-          <div class="w-full bg-slate-100 h-1.5 mt-4 rounded-full overflow-hidden">
-             <div class="bg-blue-500 h-full rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]" style="width: 70%"></div>
-          </div>
-        </div>
-
-        <!-- Pengabdian -->
-        <div class="relative overflow-hidden bg-white p-6 rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-100 group hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-           <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <svg class="w-16 h-16 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-          </div>
-          <p class="text-sm font-bold text-slate-400 uppercase tracking-wider">Pengabdian</p>
-           <div class="mt-2 flex items-baseline gap-2">
-            <span class="text-3xl font-black text-slate-800">{{ stats.totalServices }}</span>
-            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">Active</span>
-          </div>
-          <div class="w-full bg-slate-100 h-1.5 mt-4 rounded-full overflow-hidden">
-             <div class="bg-emerald-500 h-full rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]" style="width: 60%"></div>
-          </div>
-        </div>
-
-        <!-- Publikasi (Scopus + Sinta) -->
-        <div class="relative overflow-hidden bg-white p-6 rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-100 group hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-           <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-             <svg class="w-16 h-16 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
-          </div>
-          <p class="text-sm font-bold text-slate-400 uppercase tracking-wider">Total Publikasi</p>
-           <div class="mt-2 flex items-baseline gap-2">
-            <span class="text-3xl font-black text-slate-800">{{ stats.totalScopus + stats.totalSinta }}</span>
-             <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full border border-indigo-100">
-               {{ stats.totalScopus }} Int. • {{ stats.totalSinta }} Nas.
-             </span>
-          </div>
-           <div class="w-full bg-slate-100 h-1.5 mt-4 rounded-full overflow-hidden flex">
-             <div class="bg-indigo-500 h-full shadow-[0_0_10px_rgba(99,102,241,0.5)]" :style="`width: ${(stats.totalScopus / (stats.totalScopus + stats.totalSinta || 1)) * 100}%`"></div>
-             <div class="bg-sky-400 h-full" :style="`width: ${(stats.totalSinta / (stats.totalScopus + stats.totalSinta || 1)) * 100}%`"></div>
-          </div>
-        </div>
-
-        <!-- Sitasi (Google Scholar) -->
-        <div class="relative overflow-hidden bg-white p-6 rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-100 group hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-           <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <svg class="w-16 h-16 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
-          </div>
-          <p class="text-sm font-bold text-slate-400 uppercase tracking-wider">Total Sitasi</p>
-           <div class="mt-2 flex items-baseline gap-2">
-            <span class="text-3xl font-black text-slate-800">{{ stats.totalCitations }}</span>
-             <span class="text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-100">Impact Factor</span>
-          </div>
-           <div class="w-full bg-slate-100 h-1.5 mt-4 rounded-full overflow-hidden">
-             <div class="bg-amber-500 h-full rounded-full shadow-[0_0_10px_rgba(245,158,11,0.5)]" style="width: 85%"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Secondary Stats Grid (Smaller) -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-         <div class="bg-white rounded-xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 flex items-center justify-between group hover:border-blue-200 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300">
-            <div>
-               <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Google Scholar</p>
-               <p class="text-2xl font-black text-slate-800 group-hover:text-blue-600 transition-colors">{{ stats.totalGoogle }}</p>
-            </div>
-            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-black text-xs shadow-sm border border-blue-100 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">GS</div>
-         </div>
-         <div class="bg-white rounded-xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 flex items-center justify-between group hover:border-rose-200 hover:shadow-lg hover:shadow-rose-500/5 transition-all duration-300">
-            <div>
-               <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">RAMA Repositori</p>
-               <p class="text-2xl font-black text-slate-800 group-hover:text-rose-600 transition-colors">{{ stats.totalRama }}</p>
-            </div>
-             <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-black text-xs shadow-sm border border-rose-100 group-hover:scale-110 group-hover:bg-rose-600 group-hover:text-white transition-all duration-300">RM</div>
-         </div>
-         <div class="bg-white rounded-xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 flex items-center justify-between group hover:border-violet-200 hover:shadow-lg hover:shadow-violet-500/5 transition-all duration-300">
-            <div>
-               <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">HKI / IPR</p>
-               <p class="text-2xl font-black text-slate-800 group-hover:text-violet-600 transition-colors">{{ stats.totalIpr }}</p>
-            </div>
-             <div class="w-10 h-10 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center font-black text-xs shadow-sm border border-violet-100 group-hover:scale-110 group-hover:bg-violet-600 group-hover:text-white transition-all duration-300">IP</div>
-         </div>
-         <div class="bg-white rounded-xl p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 flex items-center justify-between group hover:border-emerald-200 hover:shadow-lg hover:shadow-emerald-500/5 transition-all duration-300">
-            <div>
-               <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Buku Ajar</p>
-               <p class="text-2xl font-black text-slate-800 group-hover:text-emerald-600 transition-colors">{{ stats.totalBooks }}</p>
-            </div>
-             <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black text-xs shadow-sm border border-emerald-100 group-hover:scale-110 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">BK</div>
-         </div>
-      </div>
 
     <!-- Charts Row 1 -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -148,10 +28,9 @@
         <div class="mb-4">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <span class="w-3 h-3 bg-indigo-500 rounded-full"></span>
               <h3 class="text-lg font-bold text-slate-800">Kategori Publikasi</h3>
             </div>
-            <div class="flex gap-2 text-[10px] uppercase tracking-tighter">
+            <div class="flex gap-2 text-xs">
               <span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded">Scopus</span>
               <span class="px-2 py-0.5 bg-sky-100 text-sky-700 rounded">SINTA</span>
             </div>
@@ -168,7 +47,6 @@
       <div class="card hover:shadow-lg transition-shadow">
         <div class="mb-4">
           <div class="flex items-center gap-2">
-            <span class="w-3 h-3 bg-rose-500 rounded-full"></span>
             <h3 class="text-lg font-bold text-slate-800">Top Dosen - Sitasi</h3>
           </div>
           <p class="text-xs text-slate-400 mt-1">Sitasi kumulatif dari Google Scholar (lebih komprehensif)</p>
@@ -185,7 +63,6 @@
       <div class="card hover:shadow-lg transition-shadow">
         <div class="mb-4">
           <div class="flex items-center gap-2">
-            <span class="w-3 h-3 bg-amber-500 rounded-full"></span>
             <h3 class="text-lg font-bold text-slate-800">Proporsi IPR/HKI</h3>
           </div>
           <p class="text-xs text-slate-400 mt-1">Hak Kekayaan Intelektual terdaftar</p>
@@ -207,7 +84,6 @@
       <div class="card hover:shadow-lg transition-shadow">
         <div class="mb-4">
           <div class="flex items-center gap-2">
-            <span class="w-3 h-3 bg-emerald-500 rounded-full"></span>
             <h3 class="text-lg font-bold text-slate-800">Produktivitas Tridarma</h3>
           </div>
           <p class="text-xs text-slate-400 mt-1">Top 10 dosen | Publikasi = Scopus + SINTA Garuda</p>
@@ -270,7 +146,7 @@
                     <SortIcon :active="sortColumn === 'google'" :direction="sortDirection" />
                   </button>
                   <div class="hidden group-hover/tooltip:block absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 p-2 bg-slate-800 text-white text-[10px] font-medium rounded shadow-lg z-50 normal-case leading-tight text-center">
-                    Data diambil langsung (real-time) dari profil Google Scholar, mungkin berbeda dengan sinkronisasi SINTA.
+                    Jumlah dokumen Google Scholar yang tersinkron di SINTA; bisa berbeda dengan profil Scholar terbaru.
                     <div class="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-slate-800"></div>
                   </div>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3 text-orange-400 cursor-help">
@@ -508,20 +384,6 @@
       </div>
     </div>
 
-    <!-- Info Update -->
-    <div class="text-center text-sm text-slate-500 pb-6 space-y-2">
-      <div class="flex items-center justify-center gap-3">
-        <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-full">
-          <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-          <span class="text-xs font-semibold text-slate-600">Galeri Inovasi Active</span>
-        </div>
-        <span v-if="metadata" class="text-slate-400">|</span>
-        <span v-if="metadata" class="text-slate-500">Last sync: {{ formatDate(metadata.generatedAt) }}</span>
-      </div>
-      <p class="text-xs text-slate-400">
-        Data kumulatif keseluruhan karir dosen dari SINTA Kemdiktisaintek
-      </p>
-    </div>
   </div>
 </template>
 
@@ -539,6 +401,8 @@ import {
 } from 'chart.js';
 
 import { prodiRegistry, prodiList } from '../data/prodi/index.js';
+import KpiCard from './ui/KpiCard.vue';
+import FadeContent from './vue-bits/FadeContent.vue';
 
 ChartJS.register(
   Title,
@@ -561,7 +425,7 @@ const SortIcon = {
 
 export default {
   name: 'SintaStatistics',
-  components: { Bar, Doughnut, SortIcon },
+  components: { Bar, Doughnut, SortIcon, KpiCard, FadeContent },
   props: {
     selectedProdi: {
       type: String,
@@ -619,6 +483,14 @@ export default {
         else if (col === 'ipr') { valA = a.ipr?.total || 0; valB = b.ipr?.total || 0; }
         return (valA - valB) * dir;
       });
+    },
+    secondaryStats() {
+      return [
+        { label: 'Google Scholar', value: this.stats.totalGoogle },
+        { label: 'RAMA Repositori', value: this.stats.totalRama },
+        { label: 'HKI / IPR', value: this.stats.totalIpr },
+        { label: 'Buku', value: this.stats.totalBooks },
+      ];
     },
     stats() {
       const s = { totalResearch: 0, totalServices: 0, totalScopus: 0, totalSinta: 0, totalCitations: 0, totalIpr: 0, totalBooks: 0, totalGoogle: 0, totalRama: 0 };

@@ -1,61 +1,39 @@
 <template>
   <div class="space-y-6">
-    <!-- Header -->
-    <div class="card bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-slate-700">
-      <div class="flex items-start justify-between mb-6 gap-4">
-        <div class="flex items-center gap-4">
-          <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 via-blue-500 to-cyan-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/30 shrink-0">
-            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
-            </svg>
-          </div>
-          <div>
-            <h1 class="text-2xl font-black text-white tracking-tight">
-              Pemetaan {{ kindLabel }} &mdash; {{ activeRef === 'ITK' ? 'Roadmap Institut' : 'Roadmap Fakultas' }}
-            </h1>
-            <p v-if="hasData" class="text-sm text-slate-400 mt-0.5">
-              Judul {{ metadata.kindLabel }} {{ metadata.prodi }} terhadap {{ metadata.categoryLabel }} &mdash; {{ metadata.reference }}
-            </p>
-            <p v-else class="text-sm text-slate-400 mt-0.5">
-              Acuan ini belum tersedia untuk {{ kindLabel }}
-            </p>
-          </div>
+    <!-- Kontrol: acuan roadmap + tahun -->
+    <div class="card space-y-4">
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div class="min-w-0">
+          <h2 class="text-lg font-black text-slate-900">
+            Pemetaan {{ kindLabel }} &mdash; {{ activeRef === 'ITK' ? 'Roadmap Institut' : 'Roadmap Fakultas' }}
+          </h2>
+          <p class="mt-0.5 text-xs text-slate-500">
+            <template v-if="hasData">Judul {{ metadata.kindLabel }} {{ metadata.prodi }} terhadap {{ metadata.categoryLabel }} &mdash; {{ metadata.reference }}</template>
+            <template v-else>Acuan ini belum tersedia untuk {{ kindLabel }}</template>
+            <template v-if="metadata.generatedAt"> · diperbarui {{ formatDate(metadata.generatedAt) }}</template>
+          </p>
         </div>
-        <div v-if="metadata.generatedAt" class="hidden md:block text-right shrink-0">
-          <span class="text-xs uppercase tracking-wider text-slate-500 font-bold">Diperbarui</span>
-          <p class="text-sm font-semibold text-slate-300">{{ formatDate(metadata.generatedAt) }}</p>
+        <div class="flex w-fit gap-1 rounded-xl bg-slate-100 p-1">
+          <button
+            v-for="r in refOptions"
+            :key="r.key"
+            @click="activeRef = r.key; activePillar = 'all'"
+            :class="[
+              'px-4 py-2 rounded-lg text-sm font-bold transition-all',
+              activeRef === r.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'
+            ]"
+          >{{ r.label }}</button>
         </div>
-      </div>
-
-      <div class="flex gap-1 bg-white/5 border border-white/10 p-1 rounded-xl mb-4 w-fit">
-        <button
-          v-for="r in refOptions"
-          :key="r.key"
-          @click="activeRef = r.key; activePillar = 'all'"
-          :class="[
-            'px-4 py-2 rounded-lg text-sm font-bold transition-all',
-            activeRef === r.key ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-200'
-          ]"
-        >{{ r.label }}</button>
       </div>
 
       <!-- Pemilih tahun: audit AMI berjalan per tahun -->
-      <div v-if="hasData" class="mb-4">
-        <p class="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">
-          Tahun kegiatan &mdash; pilih satu tahun untuk melihat capaian tahun tersebut saja
-        </p>
-        <p class="text-[11px] text-slate-500 mb-2">
-          Tanda <span class="text-amber-400 font-black">*</span> = tahun di luar masa berlaku dokumen acuan
-          ({{ metadata.validFrom }}&ndash;{{ metadata.validTo }}); pemetaannya bersifat retrospektif.
-        </p>
+      <div v-if="hasData">
         <div class="flex gap-2 flex-wrap">
           <button
             @click="activeYear = 'all'; activePillar = 'all'"
             :class="[
               'px-3 py-1.5 rounded-lg text-xs font-bold border transition-all',
-              activeYear === 'all'
-                ? 'bg-white text-slate-900 border-white'
-                : 'bg-white/5 text-slate-400 border-white/10 hover:text-slate-200'
+              activeYear === 'all' ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'
             ]"
           >Semua Tahun</button>
           <button
@@ -64,40 +42,29 @@
             @click="activeYear = y.year; activePillar = 'all'"
             :class="[
               'px-3 py-1.5 rounded-lg text-xs font-bold border transition-all flex items-center gap-1.5',
-              activeYear === y.year
-                ? 'bg-white text-slate-900 border-white'
-                : 'bg-white/5 text-slate-400 border-white/10 hover:text-slate-200'
+              activeYear === y.year ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300'
             ]"
           >
             {{ y.year }}
-            <span class="text-slate-500">({{ y.count }})</span>
-            <span v-if="!y.inPeriod" class="text-amber-400 font-black" title="Di luar masa berlaku dokumen acuan">*</span>
+            <span :class="activeYear === y.year ? 'text-slate-400' : 'text-slate-400'">({{ y.count }})</span>
+            <span v-if="!y.inPeriod" class="text-amber-500 font-black" title="Di luar masa berlaku dokumen acuan">*</span>
           </button>
         </div>
+        <p class="mt-2 text-[11px] text-slate-500">
+          Pilih satu tahun untuk melihat capaian tahun tersebut.
+          <span class="text-amber-500 font-black">*</span> = di luar masa berlaku dokumen acuan
+          ({{ metadata.validFrom }}&ndash;{{ metadata.validTo }}); pemetaannya retrospektif.
+        </p>
       </div>
+    </div>
 
-      <div v-if="hasData" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-        <div class="bg-white/5 rounded-xl p-4 text-center border border-white/10">
-          <div class="text-2xl font-black text-cyan-300">{{ scopedSummary.totalUniqueResearch }}</div>
-          <div class="text-xs uppercase tracking-wider text-slate-400 mt-1 font-bold">Judul Unik</div>
-        </div>
-        <div class="bg-white/5 rounded-xl p-4 text-center border border-white/10">
-          <div class="text-2xl font-black text-emerald-300">{{ scopedSummary.mapped }}</div>
-          <div class="text-xs uppercase tracking-wider text-slate-400 mt-1 font-bold">Terpetakan</div>
-        </div>
-        <div class="bg-white/5 rounded-xl p-4 text-center border border-white/10">
-          <div class="text-2xl font-black text-amber-300">{{ scopedSummary.coveragePercent }}%</div>
-          <div class="text-xs uppercase tracking-wider text-slate-400 mt-1 font-bold">Cakupan Roadmap</div>
-        </div>
-        <div class="bg-white/5 rounded-xl p-4 text-center border border-white/10">
-          <div class="text-2xl font-black text-slate-300">{{ scopedSummary.unmapped }}</div>
-          <div class="text-xs uppercase tracking-wider text-slate-400 mt-1 font-bold">Di Luar Acuan</div>
-        </div>
-        <div class="bg-white/5 rounded-xl p-4 text-center border border-white/10">
-          <div class="text-2xl font-black text-violet-300">{{ filledCategories }}<span class="text-base text-slate-500">/{{ totalCategories }}</span></div>
-          <div class="text-xs uppercase tracking-wider text-slate-400 mt-1 font-bold">{{ metadata.categoryLabel }} Tersentuh</div>
-        </div>
-      </div>
+    <!-- KPI cakupan (Counter bergulir saat tahun / acuan diganti) -->
+    <div v-if="hasData" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      <KpiCard label="Judul Unik" :value="scopedSummary.totalUniqueResearch" accent="#0891b2" size="sm" />
+      <KpiCard label="Terpetakan" :value="scopedSummary.mapped" accent="#059669" size="sm" />
+      <KpiCard label="Cakupan Roadmap" :value="scopedSummary.coveragePercent" kind="decimal" :decimals="1" suffix="%" accent="#d97706" size="sm" />
+      <KpiCard label="Di Luar Acuan" :value="scopedSummary.unmapped" accent="#64748b" size="sm" />
+      <KpiCard :label="`${metadata.categoryLabel} Tersentuh`" :value="filledCategories" :suffix="`/${totalCategories}`" accent="#7c3aed" size="sm" />
     </div>
 
     <div v-if="!hasData" class="card py-12 px-6">
@@ -129,7 +96,7 @@
 
     <template v-else>
       <!-- Konteks AMI + batas acuan -->
-      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-5">
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5">
         <p class="text-[10px] font-bold uppercase tracking-widest text-blue-500 mb-1">Butir Audit Mutu Internal</p>
         <p class="text-sm font-bold text-slate-800 mb-2">
           &ldquo;Apakah program studi memiliki pemetaan judul penelitian terhadap roadmap penelitian jurusan / ITK?&rdquo;
@@ -199,8 +166,7 @@
             ]"
           >
             <div class="flex items-start gap-3">
-              <div class="w-2 h-14 rounded-full shrink-0" :style="{ backgroundColor: p.color }"></div>
-              <div class="flex-1 min-w-0">
+                            <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 flex-wrap">
                   <span class="px-2 py-0.5 rounded text-[10px] font-black tracking-wider"
                         :style="{ backgroundColor: p.color + '22', color: p.color }">{{ p.key }}</span>
@@ -316,6 +282,7 @@
 
 <script>
 import { prodiRegistry } from '../data/prodi/index.js'
+import KpiCard from './ui/KpiCard.vue'
 
 // Warna per kategori. Acuan ITK diwarnai per tema smart city agar sub tema
 // dalam satu tema terbaca sebagai satu rumpun.
@@ -333,6 +300,7 @@ const PILLAR_COLOR = {
 
 export default {
   name: 'RoadmapMapping',
+  components: { KpiCard },
   props: {
     prodiSlug: { type: String, default: 'sistem-informasi' },
     // 'research' = judul penelitian, 'services' = judul pengabdian (Abdimas)

@@ -1,52 +1,24 @@
 <template>
   <div class="space-y-6">
-    <!-- Header -->
-    <div class="card bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-slate-700">
-      <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center gap-4">
-          <div class="relative">
-            <div class="w-14 h-14 bg-gradient-to-br from-rose-500 via-pink-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-rose-500/30">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-              </svg>
-            </div>
-            <div class="absolute inset-0 rounded-2xl bg-rose-500/30 animate-ping"></div>
-          </div>
-          <div>
-            <div class="flex items-center gap-3">
-              <h1 class="text-2xl font-black text-white tracking-tight">Koleksi Karya</h1>
-              <span class="px-2 py-0.5 bg-gradient-to-r from-rose-500 to-pink-500 text-white text-[10px] font-bold rounded-full uppercase tracking-wider">{{ totalItems }} Items</span>
-            </div>
-            <p class="text-sm text-slate-400 mt-0.5">Kumpulan Penelitian, Pengabdian, Publikasi & HKI Dosen</p>
-          </div>
+    <!-- Toolbar filter (judul halaman sudah ada di PageHeader + tab) -->
+    <div class="sticky top-0 z-20 -mx-1 px-1 py-1">
+      <div class="flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 bg-white/90 p-3 shadow-sm backdrop-blur">
+        <div class="relative flex-1 min-w-[220px]">
+          <input
+            v-model="searchQuery"
+            type="search"
+            placeholder="Cari judul atau nama dosen..."
+            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 pl-10 text-sm text-slate-800 placeholder-slate-400 focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100"
+          />
+          <svg class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
         </div>
-      </div>
-
-      <!-- Filters Row -->
-      <div class="flex flex-wrap gap-3 items-center">
-        <!-- Prodi Filter -->
-        <select v-model="selectedProdi" class="bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-medium border border-slate-600 focus:border-rose-500 focus:outline-none">
+        <select v-if="availableProdi.length > 1" v-model="selectedProdi" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 focus:border-blue-400 focus:outline-none">
           <option value="all">Semua Prodi</option>
           <option v-for="p in availableProdi" :key="p.slug" :value="p.name">{{ p.name }}</option>
         </select>
-
-        <!-- Search -->
-        <div class="flex-1 min-w-[200px]">
-          <div class="relative">
-            <input
-              v-model="searchQuery"
-              type="text"
-              placeholder="Cari judul atau nama dosen..."
-              class="w-full bg-slate-700 text-white px-4 py-2 pl-10 rounded-lg text-sm border border-slate-600 focus:border-rose-500 focus:outline-none placeholder-slate-400"
-            />
-            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
-          </div>
-        </div>
-
-        <!-- Year Filter -->
-        <select v-model="selectedYear" class="bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-medium border border-slate-600 focus:border-rose-500 focus:outline-none">
+        <select v-model="selectedYear" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 focus:border-blue-400 focus:outline-none">
           <option value="all">Semua Tahun</option>
           <option v-for="year in availableYears" :key="year" :value="year">{{ year }}</option>
         </select>
@@ -58,10 +30,9 @@
       <div class="mb-4">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <span class="w-3 h-3 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full"></span>
             <h3 class="text-lg font-bold text-slate-800">Tren Penelitian & Pengabdian</h3>
           </div>
-          <div class="flex gap-2 text-[10px] uppercase tracking-tighter">
+          <div class="flex gap-2 text-xs">
             <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded flex items-center gap-1">
               <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
               Penelitian
@@ -79,72 +50,49 @@
       <div class="h-64">
         <Line :data="trendChartData" :options="trendChartOptions" />
       </div>
-      <!-- Summary Stats -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4 pt-4 border-t border-slate-100">
-        <div class="text-center">
-          <div class="text-xl font-black text-blue-600">{{ totalResearchFiltered }}</div>
-          <div class="text-[10px] uppercase tracking-wider text-slate-500 font-medium">Total Penelitian</div>
-        </div>
-        <div class="text-center">
-          <div class="text-xl font-black text-emerald-600">{{ totalServicesFiltered }}</div>
-          <div class="text-[10px] uppercase tracking-wider text-slate-500 font-medium">Total Pengabdian</div>
-        </div>
-        <div class="text-center">
-          <div class="text-xl font-black text-purple-600">{{ peakYear.year || '-' }}</div>
-          <div class="text-[10px] uppercase tracking-wider text-slate-500 font-medium">Tahun Terbanyak</div>
-        </div>
-        <div class="text-center">
-          <div class="text-xl font-black text-rose-600">{{ peakYear.total || 0 }}</div>
-          <div class="text-[10px] uppercase tracking-wider text-slate-500 font-medium">Karya di {{ peakYear.year || '-' }}</div>
-        </div>
-      </div>
+      <p v-if="peakYear.year" class="mt-3 text-xs text-slate-500">
+        Puncak aktivitas: <strong class="text-slate-700">{{ peakYear.year }}</strong> dengan {{ peakYear.total }} kegiatan.
+      </p>
     </div>
 
     <!-- Category Tabs -->
     <div class="flex flex-wrap gap-2">
-      <button 
-        v-for="tab in tabs" 
+      <button
+        v-for="tab in tabs"
         :key="tab.key"
         @click="activeTab = tab.key"
         :class="[
-          'px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 flex items-center gap-2',
-          activeTab === tab.key 
-            ? 'bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/25' 
-            : 'bg-white text-slate-600 border border-slate-200 hover:border-rose-300 hover:text-rose-600'
+          'px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-2 border',
+          activeTab === tab.key
+            ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
+            : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:text-slate-900'
         ]"
       >
-        <span>{{ tab.icon }}</span>
         <span>{{ tab.label }}</span>
         <span :class="[
-          'px-2 py-0.5 rounded-full text-xs',
-          activeTab === tab.key ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'
+          'px-1.5 py-0.5 rounded-md text-[11px] font-bold tabular-nums',
+          activeTab === tab.key ? 'bg-white/15 text-white' : 'bg-slate-100 text-slate-500'
         ]">{{ getTabCount(tab.key) }}</span>
       </button>
     </div>
 
     <!-- Content Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <div
-        v-for="(item, index) in filteredItems"
+      <GlareHover
+        v-for="(item, index) in visibleItems"
         :key="`${item.type}-${index}`"
-        class="card group hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+        background="#ffffff"
+        border-radius="0.75rem"
+        border-color="#f1f5f9"
+        glare-color="#ffffff"
+        :glare-opacity="0.55"
+        :glare-size="45"
+        class-name="card group !flex !flex-col !place-items-stretch !text-left w-full !p-5 hover:shadow-md transition-shadow duration-300 cursor-pointer"
+        role="button"
+        tabindex="0"
         @click="openModal(item)"
+        @keydown.enter="openModal(item)"
       >
-        <!-- Image -->
-        <div class="aspect-video w-full rounded-lg overflow-hidden mb-3 bg-slate-100 relative group-hover:shadow-inner">
-          <img
-            :src="item.image"
-            :alt="item.title"
-            loading="lazy"
-            class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
-          >
-          <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          <!-- Hover overlay: klik untuk detail -->
-          <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <span class="bg-white/90 text-slate-800 text-xs font-bold px-3 py-1.5 rounded-full shadow">Lihat Detail</span>
-          </div>
-        </div>
-
         <!-- Category Badge -->
         <div class="flex items-center justify-between mb-2">
           <span :class="getBadgeClass(item)">{{ getBadgeText(item) }}</span>
@@ -152,13 +100,13 @@
         </div>
 
         <!-- Title -->
-        <h3 class="font-bold text-slate-800 text-sm leading-relaxed mb-3 group-hover:text-rose-600 transition-colors line-clamp-2" :title="item.title">
+        <h3 class="font-semibold text-slate-800 text-sm leading-relaxed mb-4 group-hover:text-blue-700 transition-colors line-clamp-3 min-h-[3.9rem]" :title="item.title">
           {{ item.title }}
         </h3>
 
         <!-- Author -->
-        <div class="flex items-center gap-2 text-xs text-slate-500 mt-auto">
-          <div class="w-6 h-6 rounded-full overflow-hidden bg-gradient-to-br from-slate-200 to-slate-300 flex-shrink-0">
+        <div class="flex items-center gap-2 text-xs text-slate-500 mt-auto pt-3 border-t border-slate-100">
+          <div class="w-6 h-6 rounded-full overflow-hidden bg-slate-200 flex-shrink-0">
             <img v-if="item.authorPhoto" :src="item.authorPhoto" :alt="item.author" class="w-full h-full object-cover">
             <svg v-else class="w-full h-full p-1 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -169,7 +117,16 @@
              <span class="text-slate-400 text-[10px] truncate">{{ item.prodi }}</span>
           </div>
         </div>
-      </div>
+      </GlareHover>
+    </div>
+
+    <div v-if="visibleItems.length < filteredItems.length" class="flex justify-center">
+      <button
+        @click="visibleCount += PAGE_SIZE"
+        class="rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-blue-300 hover:text-blue-700"
+      >
+        Tampilkan {{ Math.min(PAGE_SIZE, filteredItems.length - visibleItems.length) }} karya lagi
+      </button>
     </div>
 
     <!-- Modal Detail -->
@@ -185,23 +142,21 @@
 
           <!-- Modal Card -->
           <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <!-- Foto Tematik Header -->
-            <div class="relative h-52 w-full overflow-hidden rounded-t-2xl">
-              <img :src="selectedItem.image" :alt="selectedItem.title" class="w-full h-full object-cover">
-              <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/30 to-transparent"></div>
-              <!-- Tombol tutup -->
+            <!-- Header modal -->
+            <div class="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+              <div class="flex items-center gap-2">
+                <span :class="getBadgeClass(selectedItem)" class="text-xs">{{ getBadgeText(selectedItem) }}</span>
+                <span v-if="selectedItem.year" class="text-xs text-slate-400">{{ selectedItem.year }}</span>
+              </div>
               <button
                 @click="closeModal"
-                class="absolute top-3 right-3 w-8 h-8 bg-white/20 hover:bg-white/40 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors"
+                aria-label="Tutup"
+                class="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
               >
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
               </button>
-              <!-- Badge di atas foto -->
-              <div class="absolute bottom-3 left-4">
-                <span :class="getBadgeClass(selectedItem)" class="text-xs">{{ getBadgeText(selectedItem) }}</span>
-              </div>
             </div>
 
             <!-- Konten Modal -->
@@ -213,7 +168,7 @@
 
               <!-- Profil Dosen -->
               <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-xl mb-5">
-                <div class="w-14 h-14 rounded-full overflow-hidden bg-gradient-to-br from-slate-200 to-slate-300 flex-shrink-0 ring-2 ring-white shadow-md">
+                <div class="w-14 h-14 rounded-full overflow-hidden bg-slate-200 flex-shrink-0 ring-2 ring-white shadow-md">
                   <img
                     v-if="selectedItem.authorPhoto"
                     :src="selectedItem.authorPhoto"
@@ -236,38 +191,38 @@
               <div v-if="selectedItem.type === 'research' || selectedItem.type === 'services'" class="space-y-3">
                 <div class="grid grid-cols-2 gap-3">
                   <div class="bg-slate-50 rounded-xl p-3">
-                    <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">Tahun</div>
+                    <div class="text-xs text-slate-400 font-bold mb-1">Tahun</div>
                     <div class="text-sm font-bold text-slate-700">{{ selectedItem.year || '-' }}</div>
                   </div>
                   <div class="bg-slate-50 rounded-xl p-3">
-                    <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">Status</div>
+                    <div class="text-xs text-slate-400 font-bold mb-1">Status</div>
                     <div class="text-sm font-bold" :class="selectedItem.raw?.status === 'Approved' ? 'text-emerald-600' : 'text-slate-600'">
                       {{ selectedItem.raw?.status || '-' }}
                     </div>
                   </div>
                   <div class="bg-slate-50 rounded-xl p-3" v-if="selectedItem.raw?.fundingFormatted">
-                    <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">Dana</div>
+                    <div class="text-xs text-slate-400 font-bold mb-1">Dana</div>
                     <div class="text-sm font-bold text-rose-600">{{ selectedItem.raw.fundingFormatted }}</div>
                   </div>
                   <div class="bg-slate-50 rounded-xl p-3" v-if="selectedItem.raw?.grantCategory">
-                    <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">Kategori Hibah</div>
+                    <div class="text-xs text-slate-400 font-bold mb-1">Kategori Hibah</div>
                     <div class="text-sm font-bold text-slate-700">{{ selectedItem.raw.grantCategory }}</div>
                   </div>
                 </div>
                 <div class="bg-slate-50 rounded-xl p-3" v-if="selectedItem.raw?.grantType">
-                  <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">Jenis Hibah</div>
+                  <div class="text-xs text-slate-400 font-bold mb-1">Jenis Hibah</div>
                   <div class="text-sm text-slate-700">{{ selectedItem.raw.grantType }}</div>
                 </div>
                 <div class="bg-slate-50 rounded-xl p-3" v-if="selectedItem.raw?.source">
-                  <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">Sumber Dana</div>
+                  <div class="text-xs text-slate-400 font-bold mb-1">Sumber Dana</div>
                   <div class="text-sm text-slate-700">{{ selectedItem.raw.source }}</div>
                 </div>
                 <div class="bg-slate-50 rounded-xl p-3" v-if="selectedItem.raw?.leader && selectedItem.raw.leader !== selectedItem.raw.grantType">
-                  <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">Ketua</div>
+                  <div class="text-xs text-slate-400 font-bold mb-1">Ketua</div>
                   <div class="text-sm font-medium text-slate-700">{{ selectedItem.raw.leader }}</div>
                 </div>
                 <div class="bg-slate-50 rounded-xl p-3" v-if="selectedItem.raw?.members?.length">
-                  <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-2">Anggota</div>
+                  <div class="text-xs text-slate-400 font-bold mb-2">Anggota</div>
                   <div class="flex flex-wrap gap-2">
                     <span
                       v-for="m in selectedItem.raw.members"
@@ -282,20 +237,20 @@
               <div v-else-if="['scopus','sinta','google','rama'].includes(selectedItem.type)" class="space-y-3">
                 <div class="grid grid-cols-2 gap-3">
                   <div class="bg-slate-50 rounded-xl p-3">
-                    <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">Tahun</div>
+                    <div class="text-xs text-slate-400 font-bold mb-1">Tahun</div>
                     <div class="text-sm font-bold text-slate-700">{{ selectedItem.year || '-' }}</div>
                   </div>
                   <div class="bg-slate-50 rounded-xl p-3">
-                    <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">Indeks</div>
+                    <div class="text-xs text-slate-400 font-bold mb-1">Indeks</div>
                     <div class="text-sm font-bold text-indigo-600">{{ selectedItem.q || '-' }}</div>
                   </div>
                 </div>
                 <div class="bg-slate-50 rounded-xl p-3" v-if="selectedItem.raw?.journal">
-                  <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">Jurnal</div>
+                  <div class="text-xs text-slate-400 font-bold mb-1">Jurnal</div>
                   <div class="text-sm text-slate-700">{{ selectedItem.raw.journal }}</div>
                 </div>
                 <div class="bg-slate-50 rounded-xl p-3" v-if="selectedItem.raw?.doi">
-                  <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">DOI</div>
+                  <div class="text-xs text-slate-400 font-bold mb-1">DOI</div>
                   <a :href="'https://doi.org/' + selectedItem.raw.doi" target="_blank" class="text-sm text-blue-600 hover:underline break-all">{{ selectedItem.raw.doi }}</a>
                 </div>
               </div>
@@ -304,16 +259,16 @@
               <div v-else-if="selectedItem.type === 'books'" class="space-y-3">
                 <div class="grid grid-cols-2 gap-3">
                   <div class="bg-slate-50 rounded-xl p-3">
-                    <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">Tahun</div>
+                    <div class="text-xs text-slate-400 font-bold mb-1">Tahun</div>
                     <div class="text-sm font-bold text-slate-700">{{ selectedItem.year || '-' }}</div>
                   </div>
                   <div class="bg-slate-50 rounded-xl p-3" v-if="selectedItem.raw?.isbn">
-                    <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">ISBN</div>
+                    <div class="text-xs text-slate-400 font-bold mb-1">ISBN</div>
                     <div class="text-sm font-bold text-slate-700">{{ selectedItem.raw.isbn }}</div>
                   </div>
                 </div>
                 <div class="bg-slate-50 rounded-xl p-3" v-if="selectedItem.raw?.publisher">
-                  <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">Penerbit</div>
+                  <div class="text-xs text-slate-400 font-bold mb-1">Penerbit</div>
                   <div class="text-sm text-slate-700">{{ selectedItem.raw.publisher }}</div>
                 </div>
               </div>
@@ -322,11 +277,11 @@
               <div v-else-if="selectedItem.type === 'ipr'" class="space-y-3">
                 <div class="grid grid-cols-2 gap-3">
                   <div class="bg-slate-50 rounded-xl p-3" v-if="selectedItem.raw?.registrationNumber">
-                    <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">No. Registrasi</div>
+                    <div class="text-xs text-slate-400 font-bold mb-1">No. Registrasi</div>
                     <div class="text-sm font-bold text-slate-700">{{ selectedItem.raw.registrationNumber }}</div>
                   </div>
                   <div class="bg-slate-50 rounded-xl p-3" v-if="selectedItem.raw?.year">
-                    <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">Tahun</div>
+                    <div class="text-xs text-slate-400 font-bold mb-1">Tahun</div>
                     <div class="text-sm font-bold text-slate-700">{{ selectedItem.raw.year }}</div>
                   </div>
                 </div>
@@ -349,7 +304,7 @@
 
     <!-- Stats Footer -->
     <div class="text-center text-sm text-slate-500 pt-4">
-      <span>Menampilkan <strong class="text-slate-700">{{ filteredItems.length }}</strong> dari <strong class="text-slate-700">{{ totalItems }}</strong> karya</span>
+      <span>Menampilkan <strong class="text-slate-700">{{ visibleItems.length }}</strong> dari <strong class="text-slate-700">{{ filteredItems.length }}</strong> karya yang cocok</span>
     </div>
   </div>
 </template>
@@ -368,6 +323,9 @@ import {
   Filler
 } from 'chart.js';
 import { prodiRegistry, prodiList } from '../data/prodi/index.js';
+import GlareHover from './vue-bits/GlareHover.vue';
+
+const PAGE_SIZE = 24;
 
 ChartJS.register(
   CategoryScale,
@@ -383,7 +341,8 @@ ChartJS.register(
 export default {
   name: 'ResearchGallery',
   components: {
-    Line
+    Line,
+    GlareHover
   },
   props: {
     initialTab: {
@@ -404,15 +363,17 @@ export default {
       selectedYear: 'all',
       searchQuery: '',
       selectedItem: null,
+      PAGE_SIZE,
+      visibleCount: PAGE_SIZE,
       tabs: [
-        { key: 'research', label: 'Penelitian', icon: '🔬' },
-        { key: 'services', label: 'Pengabdian', icon: '🤝' },
-        { key: 'scopus', label: 'Scopus', icon: '📊' },
-        { key: 'sinta', label: 'SINTA', icon: '📑' },
-        { key: 'google', label: 'G.Scholar', icon: '🎓' },
-        { key: 'rama', label: 'RAMA', icon: '📝' },
-        { key: 'books', label: 'Buku', icon: '📚' },
-        { key: 'ipr', label: 'HKI', icon: '💡' }
+        { key: 'research', label: 'Penelitian' },
+        { key: 'services', label: 'Pengabdian' },
+        { key: 'scopus', label: 'Scopus' },
+        { key: 'sinta', label: 'SINTA' },
+        { key: 'google', label: 'G.Scholar' },
+        { key: 'rama', label: 'RAMA' },
+        { key: 'books', label: 'Buku' },
+        { key: 'ipr', label: 'HKI' }
       ],
       trendChartOptions: {
         responsive: true,
@@ -610,7 +571,6 @@ export default {
             author: lec.name,
             authorPhoto,
             prodi: lec.prodi,
-            image: this.getItemImage(r.title, 'research'),
             raw: r
           });
         });
@@ -624,7 +584,6 @@ export default {
             author: lec.name,
             authorPhoto,
             prodi: lec.prodi,
-            image: this.getItemImage(s.title, 'services'),
             raw: s
           });
         });
@@ -647,7 +606,6 @@ export default {
             author: lec.name,
             authorPhoto,
             prodi: lec.prodi,
-            image: this.getItemImage(d.title, type),
             raw: d
           });
         });
@@ -661,7 +619,6 @@ export default {
             author: lec.name,
             authorPhoto,
             prodi: lec.prodi,
-            image: this.getItemImage(b.title, 'books'),
             raw: b
           });
         });
@@ -675,7 +632,6 @@ export default {
             author: lec.name,
             authorPhoto,
             prodi: lec.prodi,
-            image: this.getItemImage(i.title, 'ipr'),
             raw: i
           });
         });
@@ -717,7 +673,19 @@ export default {
 
         return true;
       });
+    },
+    // Render bertahap agar ratusan kartu tidak dimuat sekaligus
+    visibleItems() {
+      return this.filteredItems.slice(0, this.visibleCount);
     }
+  },
+
+  watch: {
+    // Filter berubah -> mulai lagi dari halaman pertama
+    activeTab() { this.visibleCount = PAGE_SIZE; },
+    selectedProdi() { this.visibleCount = PAGE_SIZE; },
+    selectedYear() { this.visibleCount = PAGE_SIZE; },
+    searchQuery() { this.visibleCount = PAGE_SIZE; }
   },
 
   methods: {
@@ -784,34 +752,6 @@ export default {
       return item.type;
     },
 
-    getItemImage(title, type) {
-      const lowerTitle = title.toLowerCase();
-      let tags = ['technology'];
-
-      if (lowerTitle.includes('iot') || lowerTitle.includes('internet of things')) tags.push('iot', 'sensor', 'internet');
-      else if (lowerTitle.includes('informasi') || lowerTitle.includes('software')) tags.push('software', 'coding', 'data');
-      else if (lowerTitle.includes('web') || lowerTitle.includes('aplikasi')) tags.push('website', 'ui', 'ux');
-      else if (lowerTitle.includes('jaringan') || lowerTitle.includes('network')) tags.push('network', 'server');
-      else if (lowerTitle.includes('bisnis') || lowerTitle.includes('manajemen')) tags.push('business', 'workspace');
-      else if (lowerTitle.includes('elektro') || lowerTitle.includes('robot')) tags.push('robot', 'arduino', 'circuit');
-      else if (type === 'research') tags.push('science', 'laboratory');
-      else if (type === 'services') tags.push('community', 'social', 'collaboration');
-      else if (type === 'books') tags.push('book', 'library');
-      else if (type === 'ipr') tags.push('innovation', 'patent');
-      else tags.push('digital', 'abstract');
-
-      // Use loremflickr for high quality themed images
-      return `https://loremflickr.com/800/600/${tags.join(',')}?lock=${Math.abs(this.hashCode(title))}`;
-    },
-
-    hashCode(str) {
-      let hash = 0;
-      for (let i = 0; i < str.length; i++) {
-        hash = ((hash << 5) - hash) + str.charCodeAt(i);
-        hash |= 0;
-      }
-      return hash;
-    },
 
     openModal(item) {
       this.selectedItem = item;
